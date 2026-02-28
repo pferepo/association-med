@@ -8,6 +8,7 @@ import tn.association.med.entities.User;
 @Component
 public class UserMapper {
 
+    // DTO → Entity 
     public User toEntity(UserRequestDTO dto) {
         return User.builder()
                 .nom(dto.getNom())
@@ -18,7 +19,8 @@ public class UserMapper {
                 .build();
     }
 
-    public UserResponseDTO toResponse(User user) {
+    // Entity → DTO 
+    public UserResponseDTO toDto(User user) {
         return UserResponseDTO.builder()
                 .id(user.getId())
                 .nom(user.getNom())

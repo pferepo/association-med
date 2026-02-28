@@ -1,9 +1,13 @@
 package tn.association.med.dto;
 
-import lombok.Data;
+import lombok.*;
 import tn.association.med.enums.Role;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserRequestDTO {
 
     private String nom;

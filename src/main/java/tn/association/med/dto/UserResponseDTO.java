@@ -1,12 +1,14 @@
 package tn.association.med.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import tn.association.med.enums.Role;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class UserResponseDTO {
 
