@@ -20,7 +20,7 @@ import tn.association.med.enums.Role;
 @Table(name = "users")
 public class User {	
 	
-	
+	// test 3
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
