@@ -8,7 +8,7 @@ public class MedApplication {
 
 	public static void main(String[] args) {
 		
-		
+		// test
 		SpringApplication.run(MedApplication.class, args);
 		
 		
