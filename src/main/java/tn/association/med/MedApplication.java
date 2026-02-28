@@ -11,6 +11,8 @@ public class MedApplication {
 		SpringApplication.run(MedApplication.class, args);
 		
 		
+		
+		
 	}
 
 }
