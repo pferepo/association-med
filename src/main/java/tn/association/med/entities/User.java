@@ -2,6 +2,7 @@ package tn.association.med.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import tn.association.med.enums.Genre;
 import tn.association.med.enums.Role;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    
+    @Enumerated(EnumType.STRING)
+    private Genre genre;
 
     private Boolean active = true;
 
