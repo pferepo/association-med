@@ -1,15 +1,12 @@
 package tn.association.med.dto;
 
-
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 import tn.association.med.enums.StatutActivite;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @Builder
 public class ActiviteResponseDTO {
 
@@ -17,7 +14,10 @@ public class ActiviteResponseDTO {
     private String titre;
     private String description;
     private String type;
+
     private StatutActivite statut;
+    private StatutActivite statutProposition;
+
     private LocalDateTime dateCreation;
     private LocalDateTime dateValidation;
 }

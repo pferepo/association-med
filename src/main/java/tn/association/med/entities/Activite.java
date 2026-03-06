@@ -29,6 +29,9 @@ public class Activite {
     @Enumerated(EnumType.STRING)
     private StatutActivite statut;
 
+    @Enumerated(EnumType.STRING)
+    private StatutActivite statutProposition; 
+
     private LocalDateTime dateCreation;
 
     private LocalDateTime dateValidation;

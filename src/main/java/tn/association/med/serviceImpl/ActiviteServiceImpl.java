@@ -2,8 +2,10 @@ package tn.association.med.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tn.association.med.dto.*;
+import tn.association.med.dto.ActiviteRequestDTO;
+import tn.association.med.dto.ActiviteResponseDTO;
 import tn.association.med.entities.Activite;
+import tn.association.med.enums.StatutActivite;
 import tn.association.med.mapper.ActiviteMapper;
 import tn.association.med.repository.ActiviteRepository;
 import tn.association.med.service.ActiviteService;
@@ -14,33 +16,53 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ActiviteServiceImpl implements ActiviteService {
 
-    private final ActiviteRepository repository;
-    private final ActiviteMapper mapper;
+    private final ActiviteRepository activiteRepository;
+    private final ActiviteMapper activiteMapper;
 
     @Override
     public ActiviteResponseDTO create(ActiviteRequestDTO dto) {
-        Activite activite = mapper.toEntity(dto);
-        Activite saved = repository.save(activite);
-        return mapper.toDto(saved);
+        Activite activite = activiteMapper.toEntity(dto);
+        Activite saved = activiteRepository.save(activite);
+        return activiteMapper.toDto(saved);
     }
+    
 
     @Override
     public List<ActiviteResponseDTO> getAll() {
-        return repository.findAll()
+        return activiteRepository.findAll()
                 .stream()
-                .map(mapper::toDto)
+                .map(activiteMapper::toDto)
                 .toList();
     }
 
     @Override
     public ActiviteResponseDTO getById(Long id) {
-        Activite activite = repository.findById(id)
+        Activite activite = activiteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Activite not found"));
-        return mapper.toDto(activite);
+
+        return activiteMapper.toDto(activite);
+    }
+
+    @Override
+    public ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto) {
+
+        Activite activite = activiteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Activite non trouvée"));
+
+        activite.setTitre(dto.getTitre());
+        activite.setDescription(dto.getDescription());
+        activite.setType(dto.getType());
+
+        activite.setStatut((dto.getStatut()));
+        activite.setStatutProposition((dto.getStatutProposition()));
+
+        Activite updated = activiteRepository.save(activite);
+
+        return activiteMapper.toDto(updated);
     }
 
     @Override
     public void delete(Long id) {
-        repository.deleteById(id);
+        activiteRepository.deleteById(id);
     }
 }

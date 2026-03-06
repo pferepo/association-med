@@ -29,6 +29,10 @@ public class UserController {
     public UserResponseDTO getById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
+    @GetMapping("/by-email")
+    public UserResponseDTO getUserByEmail(@RequestParam String email) {
+        return userService.getUserByEmail(email);
+    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {

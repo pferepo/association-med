@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import tn.association.med.dto.UserRequestDTO;
 import tn.association.med.dto.UserResponseDTO;
 import tn.association.med.entities.User;
+import tn.association.med.enums.Role;
 import tn.association.med.mapper.UserMapper;
 import tn.association.med.repository.UserRepository;
 import tn.association.med.service.UserService;
@@ -16,22 +17,25 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper = new UserMapper();
+    private final UserMapper userMapper;
 
     @Override
     public UserResponseDTO createUser(UserRequestDTO dto) {
+
         if (userRepository.existsByEmail(dto.getEmail())) {
             throw new RuntimeException("Email deja existant");
         }
 
         User user = userMapper.toEntity(dto);
-        User saved = userRepository.save(user);
 
-        return userMapper.toDto(saved);
+        User savedUser = userRepository.save(user);
+
+        return userMapper.toDto(savedUser);
     }
 
     @Override
     public List<UserResponseDTO> getAllUsers() {
+
         return userRepository.findAll()
                 .stream()
                 .map(userMapper::toDto)
@@ -40,6 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDTO getUserById(Long id) {
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -47,7 +52,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserResponseDTO getUserByEmail(String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return userMapper.toDto(user);
+    }
+
+    @Override
+    public List<UserResponseDTO> getListeMembres() {
+
+        List<User> membres = userRepository.findByRole(Role.MEMBRE);
+
+        return membres.stream()
+                .map(userMapper::toDto)
+                .toList();
+    }
+
+    @Override
     public void deleteUser(Long id) {
+
         userRepository.deleteById(id);
     }
 }
