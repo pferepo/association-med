@@ -23,6 +23,8 @@ public class ActiviteServiceImpl implements ActiviteService {
     public ActiviteResponseDTO create(ActiviteRequestDTO dto) {
         Activite activite = activiteMapper.toEntity(dto);
         Activite saved = activiteRepository.save(activite);
+        // ajout notification par email 
+        // ajout historique
         return activiteMapper.toDto(saved);
     }
     
