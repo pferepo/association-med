@@ -9,6 +9,7 @@ import tn.association.med.enums.StatutActivite;
 import tn.association.med.mapper.ActiviteMapper;
 import tn.association.med.repository.ActiviteRepository;
 import tn.association.med.service.ActiviteService;
+import tn.association.med.serviceImpl.notification.EmailNotifsService;
 
 import java.util.List;
 
@@ -18,13 +19,15 @@ public class ActiviteServiceImpl implements ActiviteService {
 
     private final ActiviteRepository activiteRepository;
     private final ActiviteMapper activiteMapper;
+    private final EmailNotifsService emailNotifsService;
 
     @Override
     public ActiviteResponseDTO create(ActiviteRequestDTO dto) {
         Activite activite = activiteMapper.toEntity(dto);
         Activite saved = activiteRepository.save(activite);
-        // ajout notification par email 
-        // ajout historique
+
+        emailNotifsService.envoyerEmail("plusmarwan@gmail.com","reunion notif","test");
+
         return activiteMapper.toDto(saved);
     }
     
