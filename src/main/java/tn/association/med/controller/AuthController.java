@@ -1,10 +1,8 @@
 package tn.association.med.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 import tn.association.med.dto.AuthRequestDTO;
 import tn.association.med.service.AuthService;
 
@@ -17,7 +15,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@RequestBody AuthRequestDTO request) {
-        authService.login(request.getEmail(), request.getPassword());
-        return "Login successful";
+
+        return authService.login(
+                request.getEmail(),
+                request.getPassword()
+        );
     }
+
+
 }

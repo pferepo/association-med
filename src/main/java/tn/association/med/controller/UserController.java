@@ -1,9 +1,12 @@
 package tn.association.med.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.association.med.dto.UserRequestDTO;
 import tn.association.med.dto.UserResponseDTO;
+import tn.association.med.entities.User;
 import tn.association.med.service.UserService;
 
 import java.util.List;
@@ -37,5 +40,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         userService.deleteUser(id);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/me")
+    public UserResponseDTO currentUser(Authentication authentication) {
+
+        return userService.getUserByEmail(authentication.getName());
     }
 }

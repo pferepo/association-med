@@ -2,6 +2,6 @@ package tn.association.med.service;
 
 public interface AuthService {
 
-    void login(String email, String password);
+    String login(String email, String password);
 
 }
