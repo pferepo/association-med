@@ -1,7 +1,6 @@
 package tn.association.med.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.association.med.dto.AuthRequestDTO;
 import tn.association.med.service.AuthService;
