@@ -2,9 +2,7 @@ package tn.association.med.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tn.association.med.dto.VoteRequestDTO;
 import tn.association.med.dto.VoteResponseDTO;
-import tn.association.med.entities.Activite;
 import tn.association.med.entities.ParticipationVote;
 import tn.association.med.entities.User;
 import tn.association.med.entities.Vote;

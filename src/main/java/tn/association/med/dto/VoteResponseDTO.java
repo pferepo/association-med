@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import tn.association.med.enums.VoteStatus;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
