@@ -1,6 +1,7 @@
 package tn.association.med.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tn.association.med.dto.UserRequestDTO;
 import tn.association.med.dto.UserResponseDTO;
@@ -18,15 +19,15 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserResponseDTO createUser(UserRequestDTO dto) {
 
-        if (userRepository.existsByEmail(dto.getEmail())) {
-            throw new RuntimeException("Email deja existant");
-        }
-
         User user = userMapper.toEntity(dto);
+
+        // cryptage du mot de passe
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User savedUser = userRepository.save(user);
 
