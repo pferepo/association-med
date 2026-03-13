@@ -20,7 +20,6 @@ import java.util.List;
 public class ActiviteServiceImpl implements ActiviteService {
 
     private final ActiviteRepository activiteRepository;
-    private final UserRepository userRepository;
     private final ActiviteMapper activiteMapper;
     private final EmailNotifsService emailNotifsService;
 
