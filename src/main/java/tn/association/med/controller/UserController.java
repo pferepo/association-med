@@ -1,6 +1,8 @@
 package tn.association.med.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.association.med.dto.UserRequestDTO;
 import tn.association.med.dto.UserResponseDTO;
@@ -11,11 +13,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping("/register")
     public UserResponseDTO create(@RequestBody UserRequestDTO dto) {
         return userService.createUser(dto);
     }
@@ -37,5 +40,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         userService.deleteUser(id);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/me")
+    public UserResponseDTO currentUser(Authentication authentication) {
+
+        return userService.getUserByEmail(authentication.getName());
     }
 }
