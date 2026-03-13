@@ -33,6 +33,11 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.toDto(savedUser);
     }
+    @Override
+    public User getUserEntityById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+    }
 
     @Override
     public List<UserResponseDTO> getAllUsers() {

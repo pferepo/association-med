@@ -1,6 +1,8 @@
 package tn.association.med.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
 import tn.association.med.entities.User;
 import tn.association.med.enums.Role;
 
@@ -14,5 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
 
     List<User> findByRole(Role role);
+    
+    @Query("SELECT u.email FROM User u WHERE u.role = 'MEMBRE'")
+    List<String> getMailsRoleMembre();
 
 }

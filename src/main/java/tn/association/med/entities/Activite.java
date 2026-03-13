@@ -3,8 +3,10 @@ package tn.association.med.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.association.med.enums.StatutActivite;
+import tn.association.med.enums.TypeActivite;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "activites")
@@ -24,7 +26,8 @@ public class Activite {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private TypeActivite type;
 
     @Enumerated(EnumType.STRING)
     private StatutActivite statut;
@@ -35,6 +38,11 @@ public class Activite {
     private LocalDateTime dateCreation;
 
     private LocalDateTime dateValidation;
+    
+    private List<String> membres;
+    
+    
+    
 
     @PrePersist
     public void prePersist() {

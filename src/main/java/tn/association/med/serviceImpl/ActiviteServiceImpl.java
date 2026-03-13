@@ -8,8 +8,11 @@ import tn.association.med.entities.Activite;
 import tn.association.med.enums.StatutActivite;
 import tn.association.med.mapper.ActiviteMapper;
 import tn.association.med.repository.ActiviteRepository;
+import tn.association.med.repository.UserRepository;
 import tn.association.med.service.ActiviteService;
+import tn.association.med.serviceImpl.notification.EmailNotifsService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,12 +20,28 @@ import java.util.List;
 public class ActiviteServiceImpl implements ActiviteService {
 
     private final ActiviteRepository activiteRepository;
+    private final UserRepository userRepository;
     private final ActiviteMapper activiteMapper;
+    private final EmailNotifsService emailNotifsService;
 
     @Override
     public ActiviteResponseDTO create(ActiviteRequestDTO dto) {
+        // 1Mapper le DTO vers l'entité
         Activite activite = activiteMapper.toEntity(dto);
+
+        //  Sauvegarder dans la base
         Activite saved = activiteRepository.save(activite);
+
+        //  Envoyer un email à tous les membres
+        for (String email : saved.getMembres()) {
+            emailNotifsService.envoyerEmail(
+                email,               // email du membre
+                saved.getTitre(),    // sujet = titre de l'activité
+                saved.getDescription() // corps = description
+            );
+        }
+
+        //  Retourner le DTO de réponse
         return activiteMapper.toDto(saved);
     }
     
