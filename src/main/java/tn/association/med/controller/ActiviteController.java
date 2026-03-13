@@ -1,6 +1,7 @@
 package tn.association.med.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tn.association.med.dto.ActiviteRequestDTO;
 import tn.association.med.dto.ActiviteResponseDTO;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/activites")
 @RequiredArgsConstructor
+@PreAuthorize("hasAnyRole('ADMIN','MEMBRE')")
 public class ActiviteController {
 
     private final ActiviteService activiteService;
