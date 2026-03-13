@@ -2,9 +2,11 @@ package tn.association.med.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.association.med.dto.VoteRequestDTO;
 import tn.association.med.dto.VoteResponseDTO;
+import tn.association.med.entities.User;
+import tn.association.med.service.UserService;
 import tn.association.med.service.VoteService;
 
 import java.util.List;
@@ -15,10 +17,22 @@ import java.util.List;
 public class VoteController {
 
     private final VoteService voteService;
+    private final UserService userService;
 
-    @PostMapping
-    public VoteResponseDTO createVote(@RequestBody VoteRequestDTO dto) {
-        return voteService.createVote(dto);
+    @PostMapping("/{voteId}/participer")
+    public ResponseEntity<String> participer(
+            @PathVariable Long voteId,
+            @RequestParam Long userId, // TODO à modifier après spring security par extraction de
+            // Authentication authentication puis ci dessou :
+            // User utilisateur = userService.getUserEntityByEmail(authentication.getName());
+            @RequestParam Boolean choix
+    ) {
+
+        User utilisateur = userService.getUserEntityById(userId);
+
+        voteService.createVote(voteId, choix, utilisateur);
+
+        return ResponseEntity.ok("Vote enregistré");
     }
 
     @GetMapping("/{id}")

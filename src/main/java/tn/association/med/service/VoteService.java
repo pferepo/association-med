@@ -2,13 +2,14 @@ package tn.association.med.service;
 
 import tn.association.med.dto.VoteRequestDTO;
 import tn.association.med.dto.VoteResponseDTO;
+import tn.association.med.entities.User;
 
 import java.util.List;
 
 public interface VoteService {
 
-    VoteResponseDTO createVote(VoteRequestDTO dto);
-
+    void createVote(Long voteId, Boolean choix, User utilisateur);
+    
     VoteResponseDTO getVoteById(Long id);
 
     List<VoteResponseDTO> getAllVotes();

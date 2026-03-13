@@ -2,8 +2,10 @@ package tn.association.med.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import tn.association.med.enums.VoteStatus;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -18,13 +20,19 @@ public class Vote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime dateLimite;
+    private LocalDateTime dateCreation;
 
-    private String statut;
+    private String description;
+
+    private Date dateLimite;
+
+    @Enumerated(EnumType.STRING)
+    private VoteStatus statut;
     
     @PrePersist
     public void prePersist() {
-        this.dateLimite = LocalDateTime.now();
+        this.dateCreation = LocalDateTime.now();
+        this.statut = VoteStatus.OUVERT;
     }
 
     @ManyToOne
