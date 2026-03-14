@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
+
 public class UserController {
 
     private final UserService userService;
@@ -24,15 +24,18 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDTO> getAll() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponseDTO getById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
     @GetMapping("/by-email")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponseDTO getUserByEmail(@RequestParam String email) {
         return userService.getUserByEmail(email);
     }

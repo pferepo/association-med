@@ -16,4 +16,6 @@ public interface ActiviteService {
     ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto);
 
     void delete(Long id);
+
+	List<ActiviteResponseDTO> getActivitiesInvite();
 }
