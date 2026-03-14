@@ -3,7 +3,6 @@ package tn.association.med.dto;
 import java.util.List;
 
 import lombok.Data;
-import tn.association.med.entities.User;
 import tn.association.med.enums.StatutActivite;
 import tn.association.med.enums.TypeActivite;
 

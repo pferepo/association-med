@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import tn.association.med.dto.ActiviteRequestDTO;
 import tn.association.med.dto.ActiviteResponseDTO;
 import tn.association.med.entities.Activite;
-import tn.association.med.entities.User;
 
 import java.util.List;
 

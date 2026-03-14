@@ -5,14 +5,11 @@ import org.springframework.stereotype.Service;
 import tn.association.med.dto.ActiviteRequestDTO;
 import tn.association.med.dto.ActiviteResponseDTO;
 import tn.association.med.entities.Activite;
-import tn.association.med.enums.StatutActivite;
 import tn.association.med.mapper.ActiviteMapper;
 import tn.association.med.repository.ActiviteRepository;
-import tn.association.med.repository.UserRepository;
 import tn.association.med.service.ActiviteService;
 import tn.association.med.serviceImpl.notification.EmailNotifsService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,7 +17,6 @@ import java.util.List;
 public class ActiviteServiceImpl implements ActiviteService {
 
     private final ActiviteRepository activiteRepository;
-    private final UserRepository userRepository;
     private final ActiviteMapper activiteMapper;
     private final EmailNotifsService emailNotifsService;
 
