@@ -49,6 +49,8 @@ public class SecurityConfig {
                         // endpoints accessibles aux membres
                         .requestMatchers("/api/votes/**").hasAnyRole("ADMIN", "MEMBRE")
 
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+
                         // tout le reste nécessite authentification
                         .anyRequest().authenticated()
                 )
