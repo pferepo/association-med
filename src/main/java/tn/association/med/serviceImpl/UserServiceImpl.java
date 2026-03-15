@@ -58,12 +58,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDTO getUserByEmail(String email) {
+    public User getUserByEmail(String email) {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return userMapper.toDto(user);
+        return user;
     }
 
     @Override

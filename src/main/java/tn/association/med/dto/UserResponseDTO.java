@@ -16,6 +16,7 @@ public class UserResponseDTO {
     private String nom;
     private String prenom;
     private String email;
+    private String genre;
     private Role role;
     private Boolean active;
     private LocalDateTime createdAt;

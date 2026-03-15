@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import tn.association.med.dto.UserRequestDTO;
 import tn.association.med.dto.UserResponseDTO;
 import tn.association.med.entities.User;
+import tn.association.med.enums.Genre;
 
 @Component
 public class UserMapper {
@@ -15,6 +16,7 @@ public class UserMapper {
                 .prenom(dto.getPrenom())
                 .email(dto.getEmail())
                 .password(dto.getPassword())
+                .genre(Genre.valueOf(dto.getGenre()))
                 .role(dto.getRole())
                 .build();
     }
@@ -26,6 +28,7 @@ public class UserMapper {
                 .nom(user.getNom())
                 .prenom(user.getPrenom())
                 .email(user.getEmail())
+                .genre(String.valueOf(user.getGenre()))
                 .role(user.getRole())
                 .active(user.getActive())
                 .createdAt(user.getCreatedAt())
