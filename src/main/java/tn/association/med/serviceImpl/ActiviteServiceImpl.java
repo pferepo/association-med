@@ -5,10 +5,12 @@ import org.springframework.stereotype.Service;
 import tn.association.med.dto.ActiviteRequestDTO;
 import tn.association.med.dto.ActiviteResponseDTO;
 import tn.association.med.entities.Activite;
-import tn.association.med.enums.StatutActivite;
+import tn.association.med.enums.TypeAction;
 import tn.association.med.mapper.ActiviteMapper;
 import tn.association.med.repository.ActiviteRepository;
 import tn.association.med.service.ActiviteService;
+import tn.association.med.service.HistoriqueService;
+import tn.association.med.serviceImpl.notification.EmailNotifsService;
 
 import java.util.List;
 
@@ -18,11 +20,30 @@ public class ActiviteServiceImpl implements ActiviteService {
 
     private final ActiviteRepository activiteRepository;
     private final ActiviteMapper activiteMapper;
+    private final EmailNotifsService emailNotifsService;
+    private final HistoriqueService historiqueService;
 
     @Override
     public ActiviteResponseDTO create(ActiviteRequestDTO dto) {
+        // Mapper le DTO vers l'entité
         Activite activite = activiteMapper.toEntity(dto);
+
+        //  Sauvegarder dans la base
         Activite saved = activiteRepository.save(activite);
+
+        //  Envoyer un email à tous les membres
+        for (String email : saved.getMembres()) {
+            emailNotifsService.envoyerEmail(
+                email,               // email du membre
+                saved.getTitre(),    // sujet = titre de l'activité
+                saved.getDescription() // corps = description
+            );
+        }
+     // Historique
+        historiqueService.save(TypeAction.ACTIVITE,"ACTIVITE", saved.getId(), saved.getDescription(), 1L);
+        // TODO corriger Id User dans Historique
+
+        //  Retourner le DTO de réponse
         return activiteMapper.toDto(saved);
     }
     
@@ -65,4 +86,14 @@ public class ActiviteServiceImpl implements ActiviteService {
     public void delete(Long id) {
         activiteRepository.deleteById(id);
     }
+
+
+	@Override
+	public List<ActiviteResponseDTO> getActivitiesInvite() {
+		
+		return activiteRepository.getActivitiesInvite()
+                .stream()
+                .map(activiteMapper::toDto)
+                .toList();
+	}
 }

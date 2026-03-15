@@ -1,8 +1,11 @@
 package tn.association.med.mapper;
 
 import org.springframework.stereotype.Component;
-import tn.association.med.dto.*;
+import tn.association.med.dto.ActiviteRequestDTO;
+import tn.association.med.dto.ActiviteResponseDTO;
 import tn.association.med.entities.Activite;
+
+import java.util.List;
 
 @Component
 public class ActiviteMapper {
@@ -14,6 +17,7 @@ public class ActiviteMapper {
                 .type(dto.getType())
                 .statut(dto.getStatut())
                 .statutProposition(dto.getStatutProposition())
+                .membres(dto.getMembre())   // List<User>
                 .build();
     }
 
@@ -27,6 +31,7 @@ public class ActiviteMapper {
                 .statutProposition(activite.getStatutProposition())
                 .dateCreation(activite.getDateCreation())
                 .dateValidation(activite.getDateValidation())
+                .membre(activite.getMembres()) // List<User>
                 .build();
     }
 }
