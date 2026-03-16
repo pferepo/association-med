@@ -19,6 +19,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity
@@ -30,6 +36,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                // Activer CORS
+                .cors(cors -> {})
+
                 .csrf(csrf -> csrf.disable())
 
                 // JWT = pas de session
@@ -49,6 +58,7 @@ public class SecurityConfig {
                         // endpoints accessibles aux membres
                         .requestMatchers("/api/votes/**").hasAnyRole("ADMIN", "MEMBRE")
 
+                        // swagger
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
                         // tout le reste nécessite authentification
@@ -62,6 +72,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(
