@@ -3,6 +3,7 @@ package tn.association.med.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.association.med.enums.StatutActivite;
+import tn.association.med.enums.StatutProposition;
 import tn.association.med.enums.TypeActivite;
 
 import java.time.LocalDateTime;
@@ -33,7 +34,7 @@ public class Activite {
     private StatutActivite statut;
 
     @Enumerated(EnumType.STRING)
-    private StatutActivite statutProposition; 
+    private StatutProposition statutProposition; 
 
     private LocalDateTime dateCreation;
 

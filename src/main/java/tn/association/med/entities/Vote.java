@@ -29,6 +29,8 @@ public class Vote {
     @Enumerated(EnumType.STRING)
     private VoteStatus statut;
     
+    
+    
     @PrePersist
     public void prePersist() {
         this.dateCreation = LocalDateTime.now();

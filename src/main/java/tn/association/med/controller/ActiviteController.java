@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -98,12 +99,13 @@ public class ActiviteController {
     })
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ActiviteResponseDTO update(
+    public ResponseEntity<ActiviteResponseDTO> update(
             @Parameter(description = "ID de l'activité à modifier", example = "1")
             @PathVariable Long id,
-            @RequestBody ActiviteRequestDTO dto) {
+            @RequestBody ActiviteRequestDTO dto) throws Exception {
 
-        return activiteService.updateActivite(id, dto);
+        ActiviteResponseDTO updated = activiteService.updateActivite(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @Operation(

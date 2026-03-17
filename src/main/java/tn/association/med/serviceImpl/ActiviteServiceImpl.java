@@ -5,9 +5,13 @@ import org.springframework.stereotype.Service;
 import tn.association.med.dto.ActiviteRequestDTO;
 import tn.association.med.dto.ActiviteResponseDTO;
 import tn.association.med.entities.Activite;
+import tn.association.med.entities.Vote;
+import tn.association.med.enums.StatutProposition;
 import tn.association.med.enums.TypeAction;
 import tn.association.med.mapper.ActiviteMapper;
+import tn.association.med.mapper.VoteMapper;
 import tn.association.med.repository.ActiviteRepository;
+import tn.association.med.repository.VoteRepository;
 import tn.association.med.service.ActiviteService;
 import tn.association.med.service.HistoriqueService;
 import tn.association.med.serviceImpl.notification.EmailNotifsService;
@@ -22,6 +26,7 @@ public class ActiviteServiceImpl implements ActiviteService {
     private final ActiviteMapper activiteMapper;
     private final EmailNotifsService emailNotifsService;
     private final HistoriqueService historiqueService;
+    private final VoteRepository voteRepository;
 
     @Override
     public ActiviteResponseDTO create(ActiviteRequestDTO dto) {
@@ -65,7 +70,7 @@ public class ActiviteServiceImpl implements ActiviteService {
     }
 
     @Override
-    public ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto) {
+    public ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto) throws Exception {
 
         Activite activite = activiteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Activite non trouvée"));
@@ -78,7 +83,38 @@ public class ActiviteServiceImpl implements ActiviteService {
         activite.setStatutProposition((dto.getStatutProposition()));
 
         Activite updated = activiteRepository.save(activite);
+        if(dto.getStatutProposition().toString().equals(null)) {
+        	throw new Exception("statut proposition est null !");
+        }
 
+        if (activite.getStatutProposition() == StatutProposition.POUR_VOTE) {
+
+            Vote vote = Vote.builder()
+                    .description("Vote pour l'activité: " + activite.getTitre())
+                    .activite(activite)
+                    .build();
+
+            voteRepository.save(vote);
+            if(!(activite.getMembres()==null)) {
+            //  Envoyer un email à tous les membres
+                for (String email : activite.getMembres()) {
+                    emailNotifsService.envoyerEmail(
+                        email,               // email du membre
+                        activite.getTitre(),    // sujet = titre de l'activité
+                        activite.getDescription() // corps = description
+                    );
+                }
+            }
+        
+         // Historique
+            historiqueService.save(
+            	    TypeAction.VOTE,
+            	    "VOTE ouvert pour Activité ID " + vote.getActivite().getId(),
+            	    vote.getId(),
+            	    vote.getDescription(),
+            	    1L
+            	);            
+        }
         return activiteMapper.toDto(updated);
     }
 

@@ -1,11 +1,22 @@
 package tn.association.med.dto;
 
-import lombok.Data;
+import lombok.*;
+import tn.association.med.enums.VoteStatus;
 
-@Data
+import java.util.Date;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class VoteRequestDTO {
 
-    private Long activiteId;
+    private String description;
 
-    private String statut;
+    private Date dateLimite;
+
+    private VoteStatus statut; // optionnel, peut être null → @PrePersist gère le statut initial
+
+    private Long activiteId;   // pour associer le vote à une activité existante
 }

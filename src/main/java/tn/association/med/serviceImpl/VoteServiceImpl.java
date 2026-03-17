@@ -2,7 +2,11 @@ package tn.association.med.serviceImpl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import tn.association.med.dto.VoteRequestDTO;
 import tn.association.med.dto.VoteResponseDTO;
+import tn.association.med.entities.Activite;
 import tn.association.med.entities.ParticipationVote;
 import tn.association.med.entities.User;
 import tn.association.med.entities.Vote;
@@ -26,7 +30,9 @@ public class VoteServiceImpl implements VoteService {
     private final ParticipationVoteRepository participationVoteRepository;
     private final VoteMapper mapper;
 
+    // -------------------- Participer à un vote --------------------
     @Override
+    @Transactional
     public void createVote(Long voteId, Boolean choix, User utilisateur) {
 
         Vote vote = voteRepository.findById(voteId)
@@ -36,7 +42,7 @@ public class VoteServiceImpl implements VoteService {
                 .existsByUtilisateurIdAndVoteId(utilisateur.getId(), voteId);
 
         if (dejaVote) {
-            throw new RuntimeException("Vous avez déjà voté pour cette activité");
+            throw new RuntimeException("Vous avez déjà voté pour ce vote");
         }
 
         ParticipationVote participation = ParticipationVote.builder()
@@ -49,32 +55,47 @@ public class VoteServiceImpl implements VoteService {
         participationVoteRepository.save(participation);
     }
 
+    // -------------------- Récupérer un vote par ID --------------------
     @Override
     public VoteResponseDTO getVoteById(Long id) {
-
         Vote vote = voteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vote not found"));
+                .orElseThrow(() -> new RuntimeException("Vote introuvable"));
 
         return mapper.toDto(vote);
     }
 
+    // -------------------- Récupérer tous les votes --------------------
     @Override
     public List<VoteResponseDTO> getAllVotes() {
-
         return voteRepository.findAll()
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());
     }
 
+    // -------------------- Fermer un vote --------------------
     @Override
+    @Transactional
     public VoteResponseDTO closeVote(Long id) {
-
         Vote vote = voteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Vote not found"));
+                .orElseThrow(() -> new RuntimeException("Vote introuvable"));
 
         vote.setStatut(VoteStatus.FERME);
 
-        return mapper.toDto(voteRepository.save(vote));
+        Vote saved = voteRepository.save(vote);
+        return mapper.toDto(saved);
+    }
+
+    // -------------------- Créer un vote (nouveau) --------------------
+    @Override
+    @Transactional
+    public VoteResponseDTO createVote(VoteRequestDTO dto) {
+        Activite activite = activiteRepository.findById(dto.getActiviteId())
+                .orElseThrow(() -> new RuntimeException("Activité introuvable"));
+
+        Vote vote = mapper.toEntity(dto, activite);
+        Vote saved = voteRepository.save(vote);
+
+        return mapper.toDto(saved);
     }
 }

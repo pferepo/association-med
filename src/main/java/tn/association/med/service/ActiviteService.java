@@ -13,7 +13,7 @@ public interface ActiviteService {
 
     ActiviteResponseDTO getById(Long id);
 
-    ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto);
+    ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto) throws Exception;
 
     void delete(Long id);
 
