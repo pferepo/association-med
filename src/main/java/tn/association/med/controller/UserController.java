@@ -39,6 +39,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Données invalides")
     })
     @PostMapping("/register")
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponseDTO create(@RequestBody UserRequestDTO dto) {
         return userService.createUser(dto);
     }
