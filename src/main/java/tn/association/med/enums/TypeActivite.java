@@ -4,6 +4,6 @@ public enum TypeActivite {
 	
 	REUNION,
 	FORMATION,
-	EVENNEMENT
+	EVENEMENT
 
 }

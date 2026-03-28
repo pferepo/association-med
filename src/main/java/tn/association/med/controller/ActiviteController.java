@@ -6,8 +6,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.Parameter;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -66,7 +68,7 @@ public class ActiviteController {
             @ApiResponse(responseCode = "200", description = "Liste récupérée avec succès")
     })
     @GetMapping("/invite")
-    @PreAuthorize("hasAnyRole('ADMIN','MEMBRE','INVITE')")
+    @PreAuthorize("permitAll()")
     public List<ActiviteResponseDTO> getActivitiesForInvite() {
         return activiteService.getActivitiesInvite();
     }
@@ -113,16 +115,33 @@ public class ActiviteController {
             description = "Supprime une activité par son identifiant. Accessible uniquement au rôle ADMIN."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Activité supprimée"),
+            @ApiResponse(responseCode = "200", description = "Activité supprimée avec succès"),
+            @ApiResponse(responseCode = "400", description = "Impossible de supprimer l'activité : penser à supprimer le vote associé avant"),
             @ApiResponse(responseCode = "403", description = "Accès refusé"),
-            @ApiResponse(responseCode = "404", description = "Activité introuvable")
+            @ApiResponse(responseCode = "404", description = "Activité introuvable"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne lors de la suppression")
     })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public void delete(
+    public ResponseEntity<String> delete(
             @Parameter(description = "ID de l'activité à supprimer", example = "1")
             @PathVariable Long id) {
 
-        activiteService.delete(id);
+        try {
+            activiteService.delete(id); // suppression dans le service
+            return ResponseEntity.ok("Activité supprimée avec succès.");
+        } catch (IllegalStateException ex) {
+            // Par ex. votes associés empêchant suppression
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Impossible de supprimer l'activité : pensez à supprimer le vote associé avant.");
+        } catch (EntityNotFoundException ex) {
+            // Activité introuvable
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Activité introuvable.");
+        } catch (Exception ex) {
+            // Autres erreurs inattendues
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erreur interne lors de la suppression de l'activité.");
+        }
     }
 }
