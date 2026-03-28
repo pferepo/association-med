@@ -17,6 +17,7 @@ import tn.association.med.service.HistoriqueService;
 import tn.association.med.serviceImpl.notification.EmailNotifsService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +47,25 @@ public class ActiviteServiceImpl implements ActiviteService {
         }
      // Historique
         historiqueService.save(TypeAction.ACTIVITE,"ACTIVITE", saved.getId(), saved.getDescription(), 1L);
-        // TODO corriger Id User dans Historique
+        
+        // Ajout VOTE
+        if (activite.getStatutProposition() == StatutProposition.POUR_VOTE) {
+
+            Vote vote = Vote.builder()
+                    .description("Vote pour l'activité: " + activite.getTitre())
+                    .activite(activite)
+                    .build();
+
+            voteRepository.save(vote);
+         // Historique
+            historiqueService.save(
+            	    TypeAction.VOTE,
+            	    "VOTE ouvert après modification pour Activité ID " + vote.getActivite().getId(),
+            	    vote.getId(),
+            	    vote.getDescription(),
+            	    1L
+            	); 
+        }
 
         //  Retourner le DTO de réponse
         return activiteMapper.toDto(saved);
@@ -72,49 +91,71 @@ public class ActiviteServiceImpl implements ActiviteService {
     @Override
     public ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto) throws Exception {
 
+        // Récupérer l'activité
         Activite activite = activiteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Activite non trouvée"));
+                .orElseThrow(() -> new RuntimeException("Activité non trouvée"));
 
+        // Mettre à jour les champs
         activite.setTitre(dto.getTitre());
         activite.setDescription(dto.getDescription());
         activite.setType(dto.getType());
+        activite.setStatut(dto.getStatut());
+        activite.setStatutProposition(dto.getStatutProposition());
 
-        activite.setStatut((dto.getStatut()));
-        activite.setStatutProposition((dto.getStatutProposition()));
-
+        // Sauvegarder l'activité mise à jour
         Activite updated = activiteRepository.save(activite);
-        if(dto.getStatutProposition().toString().equals(null)) {
-        	throw new Exception("statut proposition est null !");
-        }
 
+        // Vérification si l'activité doit avoir un vote
         if (activite.getStatutProposition() == StatutProposition.POUR_VOTE) {
 
-            Vote vote = Vote.builder()
-                    .description("Vote pour l'activité: " + activite.getTitre())
-                    .activite(activite)
-                    .build();
+            // Vérifier si un vote existe déjà
+            Optional<Vote> existingVote = voteRepository.findByActivite(activite);
 
-            voteRepository.save(vote);
-            if(!(activite.getMembres()==null)) {
-            //  Envoyer un email à tous les membres
-                for (String email : activite.getMembres()) {
-                    emailNotifsService.envoyerEmail(
-                        email,               // email du membre
-                        activite.getTitre(),    // sujet = titre de l'activité
-                        activite.getDescription() // corps = description
-                    );
-                }
+            if (existingVote.isPresent()) {
+                // Modifier le vote existant
+                Vote vote = existingVote.get();
+                vote.setDescription("Vote pour l'activité: " + activite.getTitre());
+                voteRepository.save(vote);
+
+                // Historique
+                historiqueService.save(
+                        TypeAction.VOTE,
+                        "VOTE modifié pour Activité ID " + vote.getActivite().getId(),
+                        vote.getId(),
+                        vote.getDescription(),
+                        1L
+                );
+
+            } else {
+                // Créer un nouveau vote
+                Vote vote = Vote.builder()
+                        .description("Vote pour l'activité: " + activite.getTitre())
+                        .activite(activite)
+                        .build();
+                voteRepository.save(vote);
+
+                // Historique
+                historiqueService.save(
+                        TypeAction.VOTE,
+                        "VOTE créé pour Activité ID " + vote.getActivite().getId(),
+                        vote.getId(),
+                        vote.getDescription(),
+                        1L
+                );
             }
-        
-         // Historique
-            historiqueService.save(
-            	    TypeAction.VOTE,
-            	    "VOTE ouvert pour Activité ID " + vote.getActivite().getId(),
-            	    vote.getId(),
-            	    vote.getDescription(),
-            	    1L
-            	);            
         }
+
+        // Envoyer les emails aux membres
+        if (activite.getMembres() != null) {
+            for (String email : activite.getMembres()) {
+                emailNotifsService.envoyerEmail(
+                        email,
+                        activite.getTitre(),
+                        activite.getDescription()
+                );
+            }
+        }
+
         return activiteMapper.toDto(updated);
     }
 
