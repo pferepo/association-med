@@ -21,4 +21,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<String> getMailsRoleMembre();
 
     boolean existsByRole(Role role);
+
 }

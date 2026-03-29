@@ -7,6 +7,8 @@ import tn.association.med.enums.TypeAction;
 import tn.association.med.repository.HisotriqueRepository;
 import tn.association.med.service.HistoriqueService;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class HistoriqueServiceImpl implements HistoriqueService{
@@ -25,4 +27,10 @@ public class HistoriqueServiceImpl implements HistoriqueService{
 
         hisotriqueRepository.save(historique); 
     }
+
+    @Override
+    public List<Historique> findAll() {
+        return hisotriqueRepository.findAllByOrderByDateActionDesc(); // pour afficher du plus récent au plus ancien
+    }
+
 }

@@ -39,6 +39,9 @@ public class Activite {
     private LocalDateTime dateCreation;
 
     private LocalDateTime dateValidation;
+
+    @Embedded
+    private Createur createur;
     
     private List<String> membres;
     

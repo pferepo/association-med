@@ -18,6 +18,8 @@ public class Participation {
 
     private String nomParticipant;
 
+    private String prenomParticipant;
+
     private String emailParticipant;
 
     @ManyToOne

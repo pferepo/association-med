@@ -9,6 +9,7 @@ public class ParticipationResponseDTO {
 
     private Long id;
     private String nomParticipant;
+    private String prenomParticipant;
     private String emailParticipant;
 
     private Long activiteId;

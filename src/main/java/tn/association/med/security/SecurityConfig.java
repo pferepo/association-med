@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/register").permitAll()
 
                         .requestMatchers("/api/activites/invite").permitAll()
+                        .requestMatchers( "/api/participations").permitAll()
 
                         // endpoints admin seulement
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
