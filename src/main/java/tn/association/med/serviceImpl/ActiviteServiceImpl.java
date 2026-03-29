@@ -126,6 +126,7 @@ public class ActiviteServiceImpl implements ActiviteService {
         activite.setDescription(dto.getDescription());
         activite.setType(dto.getType());
         activite.setStatut(dto.getStatut());
+        activite.setMembres(dto.getMembre());
         activite.setStatutProposition(dto.getStatutProposition());
 
         Activite updated = activiteRepository.save(activite);

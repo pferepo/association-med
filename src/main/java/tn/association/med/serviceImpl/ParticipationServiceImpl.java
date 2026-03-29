@@ -27,6 +27,11 @@ public class ParticipationServiceImpl implements ParticipationService {
         Activite activite = activiteRepository.findById(dto.getActiviteId())
                 .orElseThrow(() -> new RuntimeException("Activite non trouvée"));
 
+        // contrôle email
+        if (participationRepository.existsByemailParticipant(dto.getEmailParticipant())) {
+            throw new RuntimeException("Email déjà utilisé !");
+        }
+
         Participation participation = participationMapper.toEntity(dto, activite);
 
         Participation saved = participationRepository.save(participation);

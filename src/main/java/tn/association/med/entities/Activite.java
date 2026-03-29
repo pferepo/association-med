@@ -51,6 +51,5 @@ public class Activite {
     @PrePersist
     public void prePersist() {
         this.dateCreation = LocalDateTime.now();
-        this.statut = StatutActivite.EN_ATTENTE;
     }
 }
