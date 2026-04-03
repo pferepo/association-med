@@ -1,4 +1,4 @@
-package tn.association.med.config;
+ package tn.association.med.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
