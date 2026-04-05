@@ -28,6 +28,7 @@ public class AdminInitializer implements CommandLineRunner {
             admin.setEmail("pfe2475@gmail.com");
             admin.setPassword(passwordEncoder.encode("123456@@@@@@")); // mot de passe sécurisé
             admin.setRole(Role.ADMIN);
+            admin.setActive(true);
 
             userRepository.save(admin);
         } else {
