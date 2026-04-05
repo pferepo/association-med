@@ -63,11 +63,14 @@ public class ParticipationServiceImpl implements ParticipationService {
 
         // Envoyer un email de notification
         String subject = "Mise à jour de votre demande de participation";
+
         String message = "Bonjour,\n\n"
-                + "Nous vous remercions pour l’intérêt que vous portez à cette activité.\n"
+                + "Nous vous remercions pour l’intérêt que vous portez à l’activité : "
+                + participation.getActivite().getTitre()
+                + ".\n"
                 + "Cependant, nous vous informons que nous ne sommes plus en mesure d’accepter de nouvelles participations.\n\n"
                 + "Merci pour votre compréhension.\n\n"
-                + "Cordialement.\n Association Médical de Ben Gardane";
+                + "Cordialement,\nAssociation Médicale de Ben Gardane";
 
         emailNotifsService.envoyerEmail(email, subject, message);
     }
