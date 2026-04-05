@@ -19,7 +19,14 @@ public interface UserService {
 
     List<UserResponseDTO> getListeMembres();
 
-    void deleteUser(Long id);
-    
+    UserResponseDTO toggleUserActive(Long id);
 
+    void deleteUser(Long id);
+
+    public void sendResetCode(String email);
+
+    public void resetPassword(String email, String code, String newPassword);
+
+
+    List<String> getAllEmailUsers();
 }

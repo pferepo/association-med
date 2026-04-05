@@ -34,13 +34,15 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Genre genre;
 
-    private Boolean active = true;
+    private Boolean active;
 
     private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
-        this.active = true;
+        if (this.active == null) {
+            this.active = false; // 🔥 utilisateur inactif par défaut
+        }
     }
 }

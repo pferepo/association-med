@@ -64,6 +64,11 @@ public class SecurityConfig {
                         // swagger
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
+                        .requestMatchers(
+                                "/api/users/send-reset-code",
+                                "/api/users/reset-password"
+                        ).permitAll()
+
                         // tout le reste nécessite authentification
                         .anyRequest().authenticated()
                 )

@@ -16,5 +16,6 @@ public class ActiviteRequestDTO {
     private List<String> membre;
     private StatutActivite statut;
     private StatutProposition statutProposition;
+    private Boolean envoyerATous;
 
 }

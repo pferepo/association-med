@@ -17,6 +17,7 @@ public class UserMapper {
                 .email(dto.getEmail())
                 .password(dto.getPassword())
                 .genre(Genre.valueOf(dto.getGenre()))
+                .active(dto.getActive() != null ? dto.getActive() : false)
                 .role(dto.getRole())
                 .build();
     }

@@ -5,12 +5,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import tn.association.med.dto.UserRequestDTO;
 import tn.association.med.dto.UserResponseDTO;
+import tn.association.med.entities.PasswordResetCode;
 import tn.association.med.entities.User;
 import tn.association.med.enums.Role;
 import tn.association.med.mapper.UserMapper;
+import tn.association.med.repository.PasswordResetCodeRepository;
 import tn.association.med.repository.UserRepository;
 import tn.association.med.service.UserService;
+import tn.association.med.serviceImpl.notification.EmailNotifsService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -20,6 +24,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final EmailNotifsService emailNotifsService;
+    private final PasswordResetCodeRepository resetRepo;
+
+
 
     @Override
     public UserResponseDTO createUser(UserRequestDTO dto) {
@@ -28,11 +36,42 @@ public class UserServiceImpl implements UserService {
 
         // cryptage du mot de passe
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        if (user.getActive() == null) {
+            user.setActive(false);
+        }
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new RuntimeException("Email déjà utilisé");
+        }
 
         User savedUser = userRepository.save(user);
 
         return userMapper.toDto(savedUser);
     }
+    public UserResponseDTO toggleUserActive(Long id) {
+
+        // Récupérer l'utilisateur
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User introuvable"));
+
+        // Inverser le statut actif
+        user.setActive(!user.getActive());
+
+        // Sauvegarder l'utilisateur
+        User saved = userRepository.save(user);
+
+        // Envoyer un email de notification
+        // Titre et message personnalisés selon le nouveau statut
+        String titre = saved.getActive() ? "Votre compte est activé ✅" : "Votre compte est désactivé ❌";
+        String description = saved.getActive()
+                ? "Bonjour " + saved.getPrenom() + ", votre compte a été activé. Vous pouvez désormais vous connecter."
+                : "Bonjour " + saved.getPrenom() + ", votre compte a été désactivé. Vous ne pourrez plus vous connecter.";
+
+        emailNotifsService.envoyerEmail(saved.getEmail(), titre, description);
+
+        // Retourner l'utilisateur mis à jour
+        return userMapper.toDto(saved);
+    }
+
     @Override
     public User getUserEntityById(Long id) {
         return userRepository.findById(id)
@@ -80,5 +119,60 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(Long id) {
 
         userRepository.deleteById(id);
+    }
+
+    @Override
+    public void sendResetCode(String email) {
+
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        // 🔥 SUPPRIMER anciens codes
+        resetRepo.deleteAllByEmail(email);
+
+        String code = String.valueOf((int)(Math.random() * 900000) + 100000);
+
+        PasswordResetCode reset = new PasswordResetCode();
+        reset.setEmail(email);
+        reset.setCode(code);
+        reset.setExpiration(LocalDateTime.now().plusMinutes(10));
+        reset.setUsed(false);
+
+        resetRepo.save(reset);
+
+        emailNotifsService.envoyerEmail(
+                email,
+                "Code de réinitialisation",
+                "Votre code est : " + code
+        );
+    }
+    @Override
+    public void resetPassword(String email, String code, String newPassword) {
+
+        PasswordResetCode reset = resetRepo
+                .findTopByEmailAndCodeOrderByExpirationDesc(email, code)
+                .orElseThrow(() -> new RuntimeException("Code invalide"));
+
+        if (reset.isUsed()) {
+            throw new RuntimeException("Code déjà utilisé");
+        }
+
+        if (reset.getExpiration().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Code expiré");
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        reset.setUsed(true);
+        resetRepo.save(reset);
+    }
+
+    @Override
+    public List<String> getAllEmailUsers() {
+        return userRepository.findAllMail();
     }
 }
