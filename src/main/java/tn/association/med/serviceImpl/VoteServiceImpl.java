@@ -10,6 +10,7 @@ import tn.association.med.entities.Activite;
 import tn.association.med.entities.ParticipationVote;
 import tn.association.med.entities.User;
 import tn.association.med.entities.Vote;
+import tn.association.med.enums.StatutActivite;
 import tn.association.med.enums.VoteStatus;
 import tn.association.med.mapper.VoteMapper;
 import tn.association.med.repository.ActiviteRepository;
@@ -76,26 +77,30 @@ public class VoteServiceImpl implements VoteService {
     // -------------------- Fermer un vote --------------------
     @Override
     @Transactional
-    public VoteResponseDTO closeVote(Long id) {
+    public VoteResponseDTO closeVote(Long id, boolean approuve) {
         Vote vote = voteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Vote introuvable"));
 
         vote.setStatut(VoteStatus.FERME);
+        Activite activite = vote.getActivite();
+        if (approuve) {
+            activite.setStatut(StatutActivite.VALIDEE);
+            activite.setDateValidation(LocalDateTime.now());
+        } else {
+            activite.setStatut(StatutActivite.REFUSEE);
+        }
+
 
         Vote saved = voteRepository.save(vote);
         return mapper.toDto(saved);
     }
 
-    // -------------------- Créer un vote (nouveau) --------------------
     @Override
-    @Transactional
-    public VoteResponseDTO createVote(VoteRequestDTO dto) {
-        Activite activite = activiteRepository.findById(dto.getActiviteId())
-                .orElseThrow(() -> new RuntimeException("Activité introuvable"));
+    public void deleteVote(Long id) {
+        Vote vote = voteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Vote introuvable avec l'id : " + id));
 
-        Vote vote = mapper.toEntity(dto, activite);
-        Vote saved = voteRepository.save(vote);
-
-        return mapper.toDto(saved);
+        voteRepository.delete(vote);
     }
+
 }

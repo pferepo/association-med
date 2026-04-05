@@ -24,7 +24,7 @@ public class Vote {
 
     private String description;
 
-    private Date dateLimite;
+    private LocalDateTime dateLimite;
 
     @Enumerated(EnumType.STRING)
     private VoteStatus statut;
@@ -41,8 +41,8 @@ public class Vote {
     @JoinColumn(name = "activite_id")
     private Activite activite;
 
-    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vote", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParticipationVote> participations;
-    
-    
+
+
 }

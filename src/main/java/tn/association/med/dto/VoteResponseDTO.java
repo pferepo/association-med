@@ -17,7 +17,7 @@ public class VoteResponseDTO {
 
     private String description;
 
-    private Date dateLimite;
+    private LocalDateTime dateLimite;
 
     private VoteStatus statut;
 

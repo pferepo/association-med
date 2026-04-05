@@ -1,5 +1,6 @@
 package tn.association.med.serviceImpl;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,12 +33,14 @@ public class ActiviteServiceImpl implements ActiviteService {
     private final EmailNotifsService emailNotifsService;
     private final HistoriqueService historiqueService;
     private final VoteRepository voteRepository;
-    private final UserRepository userRepository; // pour récupérer l'utilisateur si principal = String
+    private final UserRepository userRepository;
 
-    // Méthode helper pour récupérer l'utilisateur connecté
-
+    // =========================
+    // USER CONNECTÉ
+    // =========================
     private User getConnectedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         if (auth == null || auth.getPrincipal() == null) {
             throw new RuntimeException("Utilisateur non connecté");
         }
@@ -47,58 +50,79 @@ public class ActiviteServiceImpl implements ActiviteService {
         if (principal instanceof User user) {
             return user;
         } else if (principal instanceof org.springframework.security.core.userdetails.UserDetails ud) {
-            String email = ud.getUsername(); // ici username = email
+            String email = ud.getUsername();
             return userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé pour email : " + email));
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé : " + email));
         } else if (principal instanceof String email) {
             return userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé pour email : " + email));
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé : " + email));
         }
 
-        throw new RuntimeException("Type de principal inconnu : " + principal.getClass());
+        throw new RuntimeException("Type principal inconnu : " + principal.getClass());
     }
 
+    // =========================
+    // CREATE ACTIVITE
+    // =========================
     @Override
     public ActiviteResponseDTO create(ActiviteRequestDTO dto) {
+
         User connectedUser = getConnectedUser();
         Createur createur = new Createur(connectedUser.getNom(), connectedUser.getPrenom());
 
-        // Mapper DTO -> Entité
         Activite activite = activiteMapper.toEntity(dto);
         activite.setCreateur(createur);
 
-        // Sauvegarder l'activité
         Activite saved = activiteRepository.save(activite);
 
-        // Envoyer les emails aux membres
-        if (saved.getMembres() != null) {
-            for (String email : saved.getMembres()) {
-                emailNotifsService.envoyerEmail(email, saved.getTitre(), saved.getDescription());
-            }
+        // EMAILS
+        if (saved.getMembres() != null && !saved.getMembres().isEmpty()) {
+            saved.getMembres().stream()
+                    .distinct()
+                    .forEach(email ->
+                            emailNotifsService.envoyerEmail(
+                                    email,
+                                    saved.getTitre(),
+                                    saved.getDescription()
+                            )
+                    );
         }
 
-        // Historique création activité
-        historiqueService.save(TypeAction.ACTIVITE, "ACTIVITE", saved.getId(), saved.getDescription(), connectedUser.getId());
+        // HISTORIQUE ACTIVITE
+        historiqueService.save(
+                TypeAction.ACTIVITE,
+                "ACTIVITE_CREATED",
+                saved.getId(),
+                "Création activité: " + saved.getTitre(),
+                connectedUser.getId()
+        );
 
-        // Création vote si statut = POUR_VOTE
+        // VOTE SI POUR_VOTE
         if (saved.getStatutProposition() == StatutProposition.POUR_VOTE) {
+
             Vote vote = Vote.builder()
                     .description("Vote pour l'activité: " + saved.getTitre())
                     .activite(saved)
+                    .dateLimite(dto.getDateLimiteVote())
                     .build();
-            voteRepository.save(vote);
 
-            // Historique vote
-            historiqueService.save(TypeAction.VOTE,
-                    "VOTE ouvert pour Activité ID " + vote.getActivite().getId(),
-                    vote.getId(),
-                    vote.getDescription(),
-                    connectedUser.getId());
+            Vote savedVote = voteRepository.save(vote);
+
+            historiqueService.save(
+                    TypeAction.VOTE,
+                    "VOTE_CREATED",
+                    savedVote.getId(),
+                    "Vote ouvert pour activité ID " + saved.getId(),
+                    connectedUser.getId()
+            );
         }
 
         return activiteMapper.toDto(saved);
     }
 
+    // =========================
+    // GET ALL
+    // =========================
     @Override
     public List<ActiviteResponseDTO> getAll() {
         return activiteRepository.findAll()
@@ -107,21 +131,26 @@ public class ActiviteServiceImpl implements ActiviteService {
                 .toList();
     }
 
+    // =========================
+    // GET BY ID
+    // =========================
     @Override
     public ActiviteResponseDTO getById(Long id) {
         Activite activite = activiteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Activite non trouvée"));
+                .orElseThrow(() -> new RuntimeException("Activité non trouvée"));
+
         return activiteMapper.toDto(activite);
     }
 
     @Override
     public ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto) throws Exception {
+
         User connectedUser = getConnectedUser();
 
         Activite activite = activiteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Activité non trouvée"));
 
-        // Mise à jour des champs
+        // UPDATE ACTIVITE
         activite.setTitre(dto.getTitre());
         activite.setDescription(dto.getDescription());
         activite.setType(dto.getType());
@@ -131,48 +160,93 @@ public class ActiviteServiceImpl implements ActiviteService {
 
         Activite updated = activiteRepository.save(activite);
 
-        // Vérification et création/modification du vote
-        if (activite.getStatutProposition() == StatutProposition.POUR_VOTE) {
+        // HISTORIQUE ACTIVITE
+        historiqueService.save(
+                TypeAction.ACTIVITE,
+                "ACTIVITE_UPDATED",
+                activite.getId(),
+                "Modification activité: " + activite.getTitre(),
+                connectedUser.getId()
+        );
+
+        // =========================
+        // VOTE LOGIC
+        // =========================
+        if (dto.getStatutProposition() == StatutProposition.POUR_VOTE) {
+
             Optional<Vote> existingVote = voteRepository.findByActivite(activite);
 
             if (existingVote.isPresent()) {
+
                 Vote vote = existingVote.get();
+
                 vote.setDescription("Vote pour l'activité: " + activite.getTitre());
+
+                if (dto.getDateLimiteVote() != null) {
+                    vote.setDateLimite(dto.getDateLimiteVote());
+                }
+
                 voteRepository.save(vote);
-                historiqueService.save(TypeAction.VOTE,
-                        "VOTE modifié pour Activité ID " + vote.getActivite().getId(),
+
+                historiqueService.save(
+                        TypeAction.VOTE,
+                        "VOTE_UPDATED",
                         vote.getId(),
-                        vote.getDescription(),
-                        connectedUser.getId());
+                        "Vote mis à jour pour activité ID " + activite.getId(),
+                        connectedUser.getId()
+                );
+
             } else {
+
                 Vote vote = Vote.builder()
                         .description("Vote pour l'activité: " + activite.getTitre())
                         .activite(activite)
+                        .dateLimite(dto.getDateLimiteVote())
                         .build();
-                voteRepository.save(vote);
-                historiqueService.save(TypeAction.VOTE,
-                        "VOTE créé pour Activité ID " + vote.getActivite().getId(),
-                        vote.getId(),
-                        vote.getDescription(),
-                        connectedUser.getId());
+
+                Vote savedVote = voteRepository.save(vote);
+
+                historiqueService.save(
+                        TypeAction.VOTE,
+                        "VOTE_CREATED",
+                        savedVote.getId(),
+                        "Vote créé pour activité ID " + activite.getId(),
+                        connectedUser.getId()
+                );
             }
         }
 
-        // Envoyer les emails aux membres
-        if (activite.getMembres() != null) {
-            for (String email : activite.getMembres()) {
-                emailNotifsService.envoyerEmail(email, activite.getTitre(), activite.getDescription());
-            }
+        if (activite.getMembres() != null && !activite.getMembres().isEmpty()) {
+            activite.getMembres().stream()
+                    .distinct()
+                    .forEach(email ->
+                            emailNotifsService.envoyerEmail(
+                                    email,
+                                    activite.getTitre(),
+                                    activite.getDescription()
+                            )
+                    );
         }
 
         return activiteMapper.toDto(updated);
     }
 
+    // =========================
+    // DELETE
+    // =========================
     @Override
+    @Transactional
     public void delete(Long id) {
-        activiteRepository.deleteById(id);
+
+        Activite activite = activiteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Activité non trouvée"));
+
+        activiteRepository.delete(activite);
     }
 
+    // =========================
+    // INVITES
+    // =========================
     @Override
     public List<ActiviteResponseDTO> getActivitiesInvite() {
         return activiteRepository.getActivitiesInvite()

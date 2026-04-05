@@ -14,7 +14,7 @@ public interface VoteService {
 
     List<VoteResponseDTO> getAllVotes();
 
-    VoteResponseDTO closeVote(Long id);
-    
-    VoteResponseDTO createVote(VoteRequestDTO dto);
+    VoteResponseDTO closeVote(Long id, boolean approuve);
+
+    void deleteVote(Long id);
 }
