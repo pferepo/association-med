@@ -1,4 +1,4 @@
- package tn.association.med.config;
+package tn.association.med.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -16,23 +16,47 @@ public class AdminInitializer implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void run(String... args) throws Exception {
-        // Vérifier si un admin existe
+    public void run(String... args) {
+
+        // =========================
+        // ADMIN INIT
+        // =========================
         boolean adminExists = userRepository.existsByRole(Role.ADMIN);
 
         if (!adminExists) {
-            // Créer un admin par défaut
             User admin = new User();
             admin.setNom("admin");
             admin.setPrenom("admin");
             admin.setEmail("pfe2475@gmail.com");
-            admin.setPassword(passwordEncoder.encode("123456@@@@@@")); // mot de passe sécurisé
+            admin.setPassword(passwordEncoder.encode("123456@@@@@@"));
             admin.setRole(Role.ADMIN);
             admin.setActive(true);
 
             userRepository.save(admin);
-        } else {
-            System.out.println("Admin existant trouvé, pas de création nécessaire.");
         }
+
+        // =========================
+        // COMPTE APPLI INIT
+        // =========================
+        boolean compteAppliExists =
+                userRepository.findByPrenomIgnoreCase("compteApplication").isPresent();
+
+        if (!compteAppliExists) {
+
+            User compteAppli = new User();
+
+            compteAppli.setNom("AMB");
+            compteAppli.setPrenom("compteApplication");
+            compteAppli.setEmail("setEmail@system.locale");
+
+            // password NON UTILISABLE (sécurisé)
+            compteAppli.setPassword(passwordEncoder.encode("NO_LOGIN_ACCESS"));
+
+            compteAppli.setRole(Role.MEMBRE_INVITE);
+            compteAppli.setActive(false);
+
+            userRepository.save(compteAppli);
+        }
+
     }
 }

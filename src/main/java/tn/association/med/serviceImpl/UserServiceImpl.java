@@ -72,6 +72,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> findByRole(String role) {
+        return userRepository.findByRole(Role.valueOf(role.trim().toUpperCase()));
+    }
+
+    @Override
+    public User getCompteAppli() {
+        return userRepository.findByPrenomIgnoreCase("compteApplication")
+                .orElseThrow(() -> new RuntimeException("Utilisateur compteApplication introuvable"));
+    }
+
+    @Override
     public UserResponseDTO createUser(UserRequestDTO dto) {
 
         User user = userMapper.toEntity(dto);
@@ -114,11 +125,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(saved);
     }
 
-    @Override
-    public User getUserEntityById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable"));
-    }
 
     @Override
     public List<UserResponseDTO> getAllUsers() {

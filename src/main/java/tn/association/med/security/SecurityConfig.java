@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
@@ -68,6 +69,8 @@ public class SecurityConfig {
                                 "/api/users/send-reset-code",
                                 "/api/users/reset-password"
                         ).permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/contacts").permitAll()
                         .requestMatchers("/files/**").permitAll()
                         // tout le reste nécessite authentification
                         .anyRequest().authenticated()

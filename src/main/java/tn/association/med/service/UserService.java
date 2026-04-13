@@ -13,8 +13,6 @@ public interface UserService {
 
     UserResponseDTO createUser(UserRequestDTO dto);
 
-    User getUserEntityById(Long id);
-
     List<UserResponseDTO> getAllUsers();
 
     UserResponseDTO getUserById(Long id);
@@ -47,4 +45,8 @@ public interface UserService {
     long countInactiveUsers();
 
     boolean existsByEmail(String email);
+
+    List<User> findByRole(String role);
+
+    User getCompteAppli();
 }

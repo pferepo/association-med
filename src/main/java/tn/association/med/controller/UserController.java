@@ -135,4 +135,14 @@ public class UserController {
     ) throws Exception {
         return userService.uploadUserImage(id, file);
     }
+
+    @GetMapping("/users")
+    public List<User> getByRole(@RequestParam String role) {
+        return userService.findByRole(role);
+    }
+
+    @GetMapping("/compte-appli")
+    public User getCompteAppli() {
+        return userService.getCompteAppli();
+    }
 }

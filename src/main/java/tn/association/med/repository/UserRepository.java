@@ -24,4 +24,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByRole(Role role);
 
     List<User> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom);
+
+    Optional<User> findByPrenomIgnoreCase(String nom);
+
 }
