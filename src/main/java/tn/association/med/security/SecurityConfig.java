@@ -68,7 +68,7 @@ public class SecurityConfig {
                                 "/api/users/send-reset-code",
                                 "/api/users/reset-password"
                         ).permitAll()
-
+                        .requestMatchers("/files/**").permitAll()
                         // tout le reste nécessite authentification
                         .anyRequest().authenticated()
                 )

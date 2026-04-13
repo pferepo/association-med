@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.Parameter;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.multipart.MultipartFile;
 import tn.association.med.dto.EmailRequest;
 import tn.association.med.dto.UserRequestDTO;
 import tn.association.med.dto.UserResponseDTO;
@@ -41,6 +43,13 @@ public class UserController {
     @PostMapping("/register")
     public UserResponseDTO create(@RequestBody UserRequestDTO dto) {
         return userService.createUser(dto);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponseDTO updateUser(@PathVariable Long id,
+                                      @RequestBody UserRequestDTO dto) {
+        return userService.updateUser(id, dto);
     }
 
     // --- Activer/Désactiver utilisateur ---
@@ -116,5 +125,14 @@ public class UserController {
                 req.get("code"),
                 req.get("newPassword")
         );
+    }
+
+
+    @PostMapping(value = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public User uploadImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file
+    ) throws Exception {
+        return userService.uploadUserImage(id, file);
     }
 }

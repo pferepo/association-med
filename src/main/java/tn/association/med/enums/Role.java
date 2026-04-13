@@ -2,6 +2,6 @@ package tn.association.med.enums;
 
 public enum Role {
     ADMIN,
-    MEMBRE,
-    INVITE
+    MEMBRE_BUREAU_EXECUTIF,
+    MEMBRE_INVITE
 }

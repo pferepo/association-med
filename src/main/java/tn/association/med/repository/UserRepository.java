@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import tn.association.med.entities.User;
 import tn.association.med.enums.Role;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,5 +23,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByRole(Role role);
 
-
+    List<User> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom);
 }

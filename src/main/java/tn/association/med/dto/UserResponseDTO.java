@@ -19,5 +19,8 @@ public class UserResponseDTO {
     private String genre;
     private Role role;
     private Boolean active;
+    private String imageUrl;
+    private String tel;
+    private String grade;
     private LocalDateTime createdAt;
 }

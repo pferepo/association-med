@@ -3,15 +3,18 @@ package tn.association.med.serviceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import tn.association.med.dto.UserRequestDTO;
 import tn.association.med.dto.UserResponseDTO;
 import tn.association.med.entities.PasswordResetCode;
 import tn.association.med.entities.User;
+import tn.association.med.enums.Genre;
 import tn.association.med.enums.Role;
 import tn.association.med.mapper.UserMapper;
 import tn.association.med.repository.PasswordResetCodeRepository;
 import tn.association.med.repository.UserRepository;
 import tn.association.med.service.UserService;
+import tn.association.med.serviceImpl.images.FileService;
 import tn.association.med.serviceImpl.notification.EmailNotifsService;
 
 import java.time.LocalDateTime;
@@ -28,6 +31,45 @@ public class UserServiceImpl implements UserService {
     private final PasswordResetCodeRepository resetRepo;
 
 
+    private final FileService fileService;
+
+    @Override
+    public User uploadUserImage(Long id, MultipartFile file) throws Exception {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (file == null || file.isEmpty()) {
+            throw new RuntimeException("File vide");
+        }
+
+        // 🔥 SUPPRIMER ANCIENNE IMAGE
+        if (user.getImageUrl() != null) {
+            fileService.deleteImage(user.getImageUrl());
+        }
+
+        // 🔥 SAUVEGARDER NOUVELLE IMAGE
+        String url = fileService.saveImage(file);
+
+        user.setImageUrl(url);
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public long countActiveUsers() {
+        return 0;
+    }
+
+    @Override
+    public long countInactiveUsers() {
+        return 0;
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return false;
+    }
 
     @Override
     public UserResponseDTO createUser(UserRequestDTO dto) {
@@ -108,7 +150,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDTO> getListeMembres() {
 
-        List<User> membres = userRepository.findByRole(Role.MEMBRE);
+        List<User> membres = userRepository.findByRole(Role.MEMBRE_BUREAU_EXECUTIF);
 
         return membres.stream()
                 .map(userMapper::toDto)
@@ -118,7 +160,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long id) {
 
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // SUPPRIMER IMAGE SI EXISTE
+        if (user.getImageUrl() != null) {
+            fileService.deleteImage(user.getImageUrl());
+        }
+
+        // SUPPRIMER USER
+        userRepository.delete(user);
     }
 
     @Override
@@ -174,5 +225,52 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<String> getAllEmailUsers() {
         return userRepository.findAllMail();
+    }
+
+    @Override
+    public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setNom(dto.getNom());
+        user.setPrenom(dto.getPrenom());
+        user.setEmail(dto.getEmail());
+        user.setTel(dto.getTel());
+        user.setGrade(dto.getGrade());
+
+        if (dto.getGenre() != null) {
+            user.setGenre(Genre.valueOf(dto.getGenre()));
+        }
+
+        user.setRole(dto.getRole());
+
+        User saved = userRepository.save(user);
+
+        return userMapper.toDto(saved);
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<UserResponseDTO> getUsers(org.springframework.data.domain.Pageable pageable) {
+
+        return userRepository.findAll(pageable)
+                .map(userMapper::toDto);
+    }
+
+    @Override
+    public java.util.List<UserResponseDTO> searchUsers(String keyword) {
+
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return userRepository.findAll()
+                    .stream()
+                    .map(userMapper::toDto)
+                    .toList();
+        }
+
+        return userRepository
+                .findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(keyword, keyword)
+                .stream()
+                .map(userMapper::toDto)
+                .toList();
     }
 }

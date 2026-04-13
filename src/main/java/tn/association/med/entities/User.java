@@ -28,6 +28,8 @@ public class User {
 
     private String password;
 
+    private String imageUrl;
+
     @Enumerated(EnumType.STRING)
     private Role role;
     
@@ -36,13 +38,17 @@ public class User {
 
     private Boolean active;
 
+    private String tel;
+
+    private String grade;
+
     private LocalDateTime createdAt;
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
         if (this.active == null) {
-            this.active = false; // 🔥 utilisateur inactif par défaut
+            this.active = false; //  utilisateur inactif par défaut
         }
     }
 }
