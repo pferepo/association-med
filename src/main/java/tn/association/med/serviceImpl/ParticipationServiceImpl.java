@@ -70,7 +70,7 @@ public class ParticipationServiceImpl implements ParticipationService {
                 + ".\n"
                 + "Cependant, nous vous informons que nous ne sommes plus en mesure d’accepter de nouvelles participations.\n\n"
                 + "Merci pour votre compréhension.\n\n"
-                + "Cordialement,\nAssociation Médicale de Ben Gardane";
+                + "Cordialement,\nAssociation Médicale de Ben Guerdane";
 
         emailNotifsService.envoyerEmail(email, subject, message);
     }
