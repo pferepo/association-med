@@ -32,7 +32,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Role role;
-    
+
     @Enumerated(EnumType.STRING)
     private Genre genre;
 
@@ -41,6 +41,8 @@ public class User {
     private String tel;
 
     private String grade;
+
+    private String cin;
 
     private LocalDateTime createdAt;
 

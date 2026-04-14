@@ -234,6 +234,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<String> getBureauEmails() {
+        return userRepository.findBureauEmails();
+    }
+
+    @Override
     public UserResponseDTO updateUser(Long id, UserRequestDTO dto) {
 
         User user = userRepository.findById(id)
@@ -244,6 +249,7 @@ public class UserServiceImpl implements UserService {
         user.setEmail(dto.getEmail());
         user.setTel(dto.getTel());
         user.setGrade(dto.getGrade());
+        user.setCin(dto.getCin());
 
         if (dto.getGenre() != null) {
             user.setGenre(Genre.valueOf(dto.getGenre()));

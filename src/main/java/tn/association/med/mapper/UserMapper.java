@@ -20,6 +20,7 @@ public class UserMapper {
                 .role(dto.getRole())
                 .tel(dto.getTel())
                 .grade(dto.getGrade())
+                .cin(dto.getCin())
 
                 .build();
     }
@@ -38,6 +39,7 @@ public class UserMapper {
                 .imageUrl(user.getImageUrl())
                 .tel(user.getTel())
                 .grade(user.getGrade())
+                .cin(user.getCin())
 
                 .build();
     }

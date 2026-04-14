@@ -145,4 +145,9 @@ public class UserController {
     public User getCompteAppli() {
         return userService.getCompteAppli();
     }
+
+    @GetMapping("/emails/bureau")
+    public List<String> getBureauEmails() {
+        return userService.getBureauEmails();
+    }
 }

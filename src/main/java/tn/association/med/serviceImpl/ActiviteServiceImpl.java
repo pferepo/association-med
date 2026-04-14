@@ -35,9 +35,6 @@ public class ActiviteServiceImpl implements ActiviteService {
     private final VoteRepository voteRepository;
     private final UserRepository userRepository;
 
-    // =========================
-    // USER CONNECTÉ
-    // =========================
     private User getConnectedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -75,7 +72,6 @@ public class ActiviteServiceImpl implements ActiviteService {
 
         Activite saved = activiteRepository.save(activite);
 
-        // EMAILS
         if (saved.getMembres() != null && !saved.getMembres().isEmpty()) {
             saved.getMembres().stream()
                     .distinct()
@@ -88,16 +84,15 @@ public class ActiviteServiceImpl implements ActiviteService {
                     );
         }
 
-        // HISTORIQUE ACTIVITE
-        historiqueService.save(
+        // ✅ HISTORIQUE
+        historiqueService.saveHistorique(
                 TypeAction.ACTIVITE,
                 "ACTIVITE_CREATED",
                 saved.getId(),
-                "Création activité: " + saved.getTitre(),
-                connectedUser.getId()
+                saved,
+                connectedUser
         );
 
-        // VOTE SI POUR_VOTE
         if (saved.getStatutProposition() == StatutProposition.POUR_VOTE) {
 
             Vote vote = Vote.builder()
@@ -108,12 +103,13 @@ public class ActiviteServiceImpl implements ActiviteService {
 
             Vote savedVote = voteRepository.save(vote);
 
-            historiqueService.save(
+            // ✅ HISTORIQUE VOTE
+            historiqueService.saveHistorique(
                     TypeAction.VOTE,
                     "VOTE_CREATED",
                     savedVote.getId(),
-                    "Vote ouvert pour activité ID " + saved.getId(),
-                    connectedUser.getId()
+                    saved,
+                    connectedUser
             );
         }
 
@@ -142,15 +138,17 @@ public class ActiviteServiceImpl implements ActiviteService {
         return activiteMapper.toDto(activite);
     }
 
+    // =========================
+    // UPDATE ACTIVITE
+    // =========================
     @Override
-    public ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto) throws Exception {
+    public ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto) {
 
         User connectedUser = getConnectedUser();
 
         Activite activite = activiteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Activité non trouvée"));
 
-        // UPDATE ACTIVITE
         activite.setTitre(dto.getTitre());
         activite.setDescription(dto.getDescription());
         activite.setType(dto.getType());
@@ -160,18 +158,15 @@ public class ActiviteServiceImpl implements ActiviteService {
 
         Activite updated = activiteRepository.save(activite);
 
-        // HISTORIQUE ACTIVITE
-        historiqueService.save(
+        // ✅ HISTORIQUE UPDATE ACTIVITE
+        historiqueService.saveHistorique(
                 TypeAction.ACTIVITE,
                 "ACTIVITE_UPDATED",
-                activite.getId(),
-                "Modification activité: " + activite.getTitre(),
-                connectedUser.getId()
+                updated.getId(),
+                updated,
+                connectedUser
         );
 
-        // =========================
-        // VOTE LOGIC
-        // =========================
         if (dto.getStatutProposition() == StatutProposition.POUR_VOTE) {
 
             Optional<Vote> existingVote = voteRepository.findByActivite(activite);
@@ -179,7 +174,6 @@ public class ActiviteServiceImpl implements ActiviteService {
             if (existingVote.isPresent()) {
 
                 Vote vote = existingVote.get();
-
                 vote.setDescription("Vote pour l'activité: " + activite.getTitre());
 
                 if (dto.getDateLimiteVote() != null) {
@@ -188,12 +182,13 @@ public class ActiviteServiceImpl implements ActiviteService {
 
                 voteRepository.save(vote);
 
-                historiqueService.save(
+                // ✅ HISTORIQUE VOTE UPDATED
+                historiqueService.saveHistorique(
                         TypeAction.VOTE,
                         "VOTE_UPDATED",
                         vote.getId(),
-                        "Vote mis à jour pour activité ID " + activite.getId(),
-                        connectedUser.getId()
+                        activite,
+                        connectedUser
                 );
 
             } else {
@@ -206,12 +201,13 @@ public class ActiviteServiceImpl implements ActiviteService {
 
                 Vote savedVote = voteRepository.save(vote);
 
-                historiqueService.save(
+                // ✅ HISTORIQUE VOTE CREATED
+                historiqueService.saveHistorique(
                         TypeAction.VOTE,
                         "VOTE_CREATED",
                         savedVote.getId(),
-                        "Vote créé pour activité ID " + activite.getId(),
-                        connectedUser.getId()
+                        activite,
+                        connectedUser
                 );
             }
         }
@@ -238,8 +234,19 @@ public class ActiviteServiceImpl implements ActiviteService {
     @Transactional
     public void delete(Long id) {
 
+        User connectedUser = getConnectedUser();
+
         Activite activite = activiteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Activité non trouvée"));
+
+        // ✅ HISTORIQUE DELETE
+        historiqueService.saveHistorique(
+                TypeAction.ACTIVITE,
+                "ACTIVITE_DELETED",
+                activite.getId(),
+                activite,
+                connectedUser
+        );
 
         activiteRepository.delete(activite);
     }

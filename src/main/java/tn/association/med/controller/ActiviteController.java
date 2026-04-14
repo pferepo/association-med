@@ -41,7 +41,7 @@ public class ActiviteController {
             @ApiResponse(responseCode = "401", description = "Utilisateur non authentifié")
     })
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN','MEMBRE')")
+    @PreAuthorize("hasAnyRole('ADMIN','MEMBRE_BUREAU_EXECUTIF')")
     public ActiviteResponseDTO create(@RequestBody ActiviteRequestDTO dto) {
         return activiteService.create(dto);
     }
@@ -55,7 +55,7 @@ public class ActiviteController {
             @ApiResponse(responseCode = "403", description = "Accès refusé")
     })
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN','MEMBRE')")
+    @PreAuthorize("hasAnyRole('ADMIN','MEMBRE_BUREAU_EXECUTIF')")
     public List<ActiviteResponseDTO> getAll() {
         return activiteService.getAll();
     }
@@ -82,7 +82,7 @@ public class ActiviteController {
             @ApiResponse(responseCode = "404", description = "Activité introuvable")
     })
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','MEMBRE')")
+    @PreAuthorize("hasAnyRole('ADMIN','MEMBRE_BUREAU_EXECUTIF')")
     public ActiviteResponseDTO getById(
             @Parameter(description = "ID de l'activité", example = "1")
             @PathVariable Long id) {

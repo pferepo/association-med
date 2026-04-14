@@ -19,4 +19,5 @@ public class UserRequestDTO {
     private Boolean active;
     private String tel;
     private String grade;
+    private String cin;
 }

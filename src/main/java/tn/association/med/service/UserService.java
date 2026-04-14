@@ -49,4 +49,6 @@ public interface UserService {
     List<User> findByRole(String role);
 
     User getCompteAppli();
+
+    List<String> getBureauEmails();
 }

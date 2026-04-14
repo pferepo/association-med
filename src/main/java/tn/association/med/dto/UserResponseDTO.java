@@ -22,5 +22,6 @@ public class UserResponseDTO {
     private String imageUrl;
     private String tel;
     private String grade;
+    private String cin;
     private LocalDateTime createdAt;
 }

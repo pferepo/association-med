@@ -60,7 +60,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // endpoints accessibles aux membres
-                        .requestMatchers("/api/votes/**").hasAnyRole("ADMIN", "MEMBRE")
+                        .requestMatchers("/api/votes/**").hasAnyRole("ADMIN", "MEMBRE_BUREAU_EXECUTIF")
+
+                        .requestMatchers("/api/activites/**").hasAnyRole("ADMIN", "MEMBRE_BUREAU_EXECUTIF")
 
                         // swagger
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
