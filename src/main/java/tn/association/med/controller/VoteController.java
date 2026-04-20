@@ -38,7 +38,7 @@ public class VoteController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vote enregistré"),
             @ApiResponse(responseCode = "403", description = "Accès refusé"),
-            @ApiResponse(responseCode = "409", description = "Utilisateur a déjà voté")
+            @ApiResponse(responseCode = "400", description = "Utilisateur a déjà voté")
     })
     @PostMapping("/{voteId}/participer")
     public ResponseEntity<String> participer(
