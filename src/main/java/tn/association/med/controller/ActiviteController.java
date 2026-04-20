@@ -36,12 +36,13 @@ public class ActiviteController {
             description = "Permet de créer une nouvelle activité. Accessible aux rôles ADMIN et MEMBRE."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Activité créée avec succès"),
+            @ApiResponse(responseCode = "201", description = "Activité créée avec succès"),
             @ApiResponse(responseCode = "403", description = "Accès refusé (rôle insuffisant)"),
             @ApiResponse(responseCode = "401", description = "Utilisateur non authentifié")
     })
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN','MEMBRE_BUREAU_EXECUTIF')")
+    @ResponseStatus(HttpStatus.CREATED)
     public ActiviteResponseDTO create(@RequestBody ActiviteRequestDTO dto) {
         return activiteService.create(dto);
     }

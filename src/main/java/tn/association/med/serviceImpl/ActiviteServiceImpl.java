@@ -84,7 +84,7 @@ public class ActiviteServiceImpl implements ActiviteService {
                     );
         }
 
-        // ✅ HISTORIQUE
+        // HISTORIQUE
         historiqueService.saveHistorique(
                 TypeAction.ACTIVITE,
                 "ACTIVITE_CREATED",
@@ -103,7 +103,7 @@ public class ActiviteServiceImpl implements ActiviteService {
 
             Vote savedVote = voteRepository.save(vote);
 
-            // ✅ HISTORIQUE VOTE
+            //  HISTORIQUE VOTE
             historiqueService.saveHistorique(
                     TypeAction.VOTE,
                     "VOTE_CREATED",
@@ -182,7 +182,7 @@ public class ActiviteServiceImpl implements ActiviteService {
 
                 voteRepository.save(vote);
 
-                // ✅ HISTORIQUE VOTE UPDATED
+                //  HISTORIQUE VOTE UPDATED
                 historiqueService.saveHistorique(
                         TypeAction.VOTE,
                         "VOTE_UPDATED",
@@ -201,7 +201,7 @@ public class ActiviteServiceImpl implements ActiviteService {
 
                 Vote savedVote = voteRepository.save(vote);
 
-                // ✅ HISTORIQUE VOTE CREATED
+                //  HISTORIQUE VOTE CREATED
                 historiqueService.saveHistorique(
                         TypeAction.VOTE,
                         "VOTE_CREATED",
