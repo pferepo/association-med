@@ -21,6 +21,8 @@ public class Participation {
     private String prenomParticipant;
 
     private String emailParticipant;
+    
+    private String etbParticipant;
 
     @ManyToOne
     @JoinColumn(name = "activite_id")

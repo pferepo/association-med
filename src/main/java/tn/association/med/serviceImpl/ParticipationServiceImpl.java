@@ -31,7 +31,7 @@ public class ParticipationServiceImpl implements ParticipationService {
                 .orElseThrow(() -> new RuntimeException("Activite non trouvée"));
 
         // contrôle email
-        if (participationRepository.existsByemailParticipant(dto.getEmailParticipant())) {
+        if (participationRepository.existsByEmailParticipantAndActivite_Id(dto.getEmailParticipant(),dto.getActiviteId())) {
             throw new RuntimeException("Une demande de participation a déjà été effectuée avec cet email. Votre demande a bien été reçue.");
         }
 

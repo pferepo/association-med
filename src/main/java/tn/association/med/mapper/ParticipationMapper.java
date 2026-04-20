@@ -17,6 +17,7 @@ public class ParticipationMapper {
                 .nomParticipant(dto.getNomParticipant())
                 .prenomParticipant(dto.getNomParticipant())
                 .emailParticipant(dto.getEmailParticipant())
+                .etbParticipant(dto.getEtbParticipant())
                 .activite(activite)
                 .build();
     }
@@ -30,6 +31,7 @@ public class ParticipationMapper {
                 .emailParticipant(participation.getEmailParticipant())
                 .activiteId(participation.getActivite().getId())
                 .activiteTitre(participation.getActivite().getTitre())
+                .etbParticipant(participation.getEtbParticipant())
                 .build();
     }
 }

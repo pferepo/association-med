@@ -9,5 +9,6 @@ public class ParticipationRequestDTO {
     private String prenomParticipant;
     private String emailParticipant;
     private Long activiteId;
+    private String etbParticipant;
 
 }
