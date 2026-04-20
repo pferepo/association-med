@@ -11,6 +11,7 @@ import tn.association.med.entities.Activite;
 import tn.association.med.entities.Createur;
 import tn.association.med.entities.User;
 import tn.association.med.entities.Vote;
+import tn.association.med.enums.StatutActivite;
 import tn.association.med.enums.StatutProposition;
 import tn.association.med.enums.TypeAction;
 import tn.association.med.mapper.ActiviteMapper;
@@ -21,6 +22,7 @@ import tn.association.med.service.ActiviteService;
 import tn.association.med.service.HistoriqueService;
 import tn.association.med.serviceImpl.notification.EmailNotifsService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -155,6 +157,9 @@ public class ActiviteServiceImpl implements ActiviteService {
         activite.setStatut(dto.getStatut());
         activite.setMembres(dto.getMembre());
         activite.setStatutProposition(dto.getStatutProposition());
+        if(dto.getStatut() == StatutActivite.VALIDEE){
+        activite.setDateValidation(LocalDateTime.now());
+        }
 
         Activite updated = activiteRepository.save(activite);
 
@@ -166,6 +171,8 @@ public class ActiviteServiceImpl implements ActiviteService {
                 updated,
                 connectedUser
         );
+
+
 
         if (dto.getStatutProposition() == StatutProposition.POUR_VOTE) {
 
