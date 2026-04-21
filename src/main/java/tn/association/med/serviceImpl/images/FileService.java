@@ -21,7 +21,7 @@ public class FileService {
         Files.createDirectories(path.getParent());
         Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
-        // ✅ IMPORTANT : inclure le dossier images
+        // IMPORTANT : inclure le dossier images
         return "/files/images/" + fileName;
     }
 

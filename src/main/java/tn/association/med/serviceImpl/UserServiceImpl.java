@@ -43,12 +43,12 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("File vide");
         }
 
-        // 🔥 SUPPRIMER ANCIENNE IMAGE
+        // SUPPRIMER ANCIENNE IMAGE
         if (user.getImageUrl() != null) {
             fileService.deleteImage(user.getImageUrl());
         }
 
-        // 🔥 SAUVEGARDER NOUVELLE IMAGE
+        // SAUVEGARDER NOUVELLE IMAGE
         String url = fileService.saveImage(file);
 
         user.setImageUrl(url);
