@@ -163,7 +163,7 @@ public class ActiviteServiceImpl implements ActiviteService {
 
         Activite updated = activiteRepository.save(activite);
 
-        // ✅ HISTORIQUE UPDATE ACTIVITE
+        // HISTORIQUE UPDATE ACTIVITE
         historiqueService.saveHistorique(
                 TypeAction.ACTIVITE,
                 "ACTIVITE_UPDATED",

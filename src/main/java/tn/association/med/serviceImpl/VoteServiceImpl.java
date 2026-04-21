@@ -68,7 +68,7 @@ public class VoteServiceImpl implements VoteService {
     // -------------------- Récupérer tous les votes --------------------
     @Override
     public List<VoteResponseDTO> getAllVotes() {
-        return voteRepository.findAllStatutOuvert()
+        return voteRepository.findAll()
                 .stream()
                 .map(mapper::toDto)
                 .collect(Collectors.toList());

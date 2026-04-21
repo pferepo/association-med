@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import tn.association.med.entities.Activite;
 import tn.association.med.entities.Historique;
 import tn.association.med.entities.User;
+import tn.association.med.entities.Vote;
 import tn.association.med.enums.HistoriqueStatus;
 import tn.association.med.enums.TypeAction;
 import tn.association.med.repository.HisotriqueRepository;
@@ -66,6 +67,14 @@ public class HistoriqueServiceImpl implements HistoriqueService{
     @Override
     public List<Historique> findAll() {
         return hisotriqueRepository.findAllByOrderByDateActionDesc(); // pour afficher du plus récent au plus ancien
+    }
+
+    @Override
+    public void deleteHistorique(Long id) {
+        Historique his = hisotriqueRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Historique introuvable avec l'id : " + id));
+
+        hisotriqueRepository.delete(his);
     }
 
 }

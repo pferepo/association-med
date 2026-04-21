@@ -23,4 +23,6 @@ public interface HistoriqueService {
         );
 
     List<Historique> findAll();
+
+    void deleteHistorique(Long id);
 }

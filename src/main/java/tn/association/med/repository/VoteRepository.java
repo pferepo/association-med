@@ -12,7 +12,5 @@ import tn.association.med.entities.Vote;
 public interface VoteRepository extends JpaRepository<Vote, Long> {
 
 	Optional<Vote> findByActivite(Activite activite);
-	
-	@Query("SELECT v FROM Vote v WHERE v.statut = 'OUVERT'")
-	List<Vote> findAllStatutOuvert();
+
 }
