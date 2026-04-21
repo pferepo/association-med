@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import tn.association.med.entities.Activite;
 import tn.association.med.entities.Historique;
 import tn.association.med.entities.User;
-import tn.association.med.entities.Vote;
 import tn.association.med.enums.HistoriqueStatus;
 import tn.association.med.enums.TypeAction;
 import tn.association.med.repository.HisotriqueRepository;
