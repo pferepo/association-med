@@ -38,7 +38,7 @@ public class VoteController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Vote enregistré"),
             @ApiResponse(responseCode = "403", description = "Accès refusé"),
-            @ApiResponse(responseCode = "409", description = "Utilisateur a déjà voté")
+            @ApiResponse(responseCode = "400", description = "Utilisateur a déjà voté")
     })
     @PostMapping("/{voteId}/participer")
     public ResponseEntity<String> participer(
@@ -97,8 +97,23 @@ public class VoteController {
     @PutMapping("/{id}/close")
     public VoteResponseDTO closeVote(
             @Parameter(description = "ID du vote", example = "1")
-            @PathVariable Long id) {
+            @PathVariable Long id,
 
-        return voteService.closeVote(id);
+            @Parameter(description = "Résultat du vote (true = validé, false = refusé)", example = "true")
+            @RequestParam boolean approve
+    ) {
+        return voteService.closeVote(id, approve);
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vote supprimé"),
+            @ApiResponse(responseCode = "404", description = "Vote introuvable")
+    })
+    @DeleteMapping("/{id}")
+    public void deleteVote(
+            @Parameter(description = "ID du vote", example = "1")
+            @PathVariable Long id
+    ) {
+        voteService.deleteVote(id);
     }
 }

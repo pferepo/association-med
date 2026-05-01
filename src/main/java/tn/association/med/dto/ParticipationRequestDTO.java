@@ -6,7 +6,9 @@ import lombok.Data;
 public class ParticipationRequestDTO {
 
     private String nomParticipant;
+    private String prenomParticipant;
     private String emailParticipant;
     private Long activiteId;
+    private String etbParticipant;
 
 }

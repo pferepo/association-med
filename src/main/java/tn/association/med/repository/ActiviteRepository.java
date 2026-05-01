@@ -10,7 +10,7 @@ import tn.association.med.entities.Activite;
 
 public interface ActiviteRepository extends JpaRepository<Activite, Long> {
 
-	@Query("SELECT a FROM Activite a WHERE a.type IN ('FORMATION','EVENEMENTS')")
+	@Query("SELECT a FROM Activite a WHERE a.type IN ('FORMATION','EVENEMENT') AND a.statut='VALIDEE'")
 	Collection<Activite> getActivitiesInvite();
 
 }

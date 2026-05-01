@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import tn.association.med.entities.User;
 import tn.association.med.enums.Role;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +18,16 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRole(Role role);
     
-    @Query("SELECT u.email FROM User u WHERE u.role = 'MEMBRE'")
-    List<String> getMailsRoleMembre();
+    @Query("SELECT u.email FROM User u WHERE u.active = true")
+    List<String> findAllMail();
+
+    @Query("SELECT u.email FROM User u WHERE u.role = 'MEMBRE_BUREAU_EXECUTIF' AND u.active = true")
+    List<String> findBureauEmails();
+
+    boolean existsByRole(Role role);
+
+    List<User> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom);
+
+    Optional<User> findByPrenomIgnoreCase(String nom);
 
 }

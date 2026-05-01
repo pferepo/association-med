@@ -1,5 +1,6 @@
 package tn.association.med.service;
 
+import tn.association.med.dto.VoteRequestDTO;
 import tn.association.med.dto.VoteResponseDTO;
 import tn.association.med.entities.User;
 
@@ -13,5 +14,7 @@ public interface VoteService {
 
     List<VoteResponseDTO> getAllVotes();
 
-    VoteResponseDTO closeVote(Long id);
+    VoteResponseDTO closeVote(Long id, boolean approuve);
+
+    void deleteVote(Long id);
 }

@@ -18,7 +18,11 @@ public class Participation {
 
     private String nomParticipant;
 
+    private String prenomParticipant;
+
     private String emailParticipant;
+    
+    private String etbParticipant;
 
     @ManyToOne
     @JoinColumn(name = "activite_id")

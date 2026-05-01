@@ -3,6 +3,7 @@ package tn.association.med.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import tn.association.med.enums.StatutActivite;
+import tn.association.med.enums.StatutProposition;
 import tn.association.med.enums.TypeActivite;
 
 import java.time.LocalDateTime;
@@ -33,20 +34,28 @@ public class Activite {
     private StatutActivite statut;
 
     @Enumerated(EnumType.STRING)
-    private StatutActivite statutProposition; 
+    private StatutProposition statutProposition;
 
     private LocalDateTime dateCreation;
 
     private LocalDateTime dateValidation;
-    
+
+    @Embedded
+    private Createur createur;
+
+    @ElementCollection
     private List<String> membres;
+
     
-    
-    
+    @OneToMany(mappedBy = "activite", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Vote> votes;
+
+
+    @OneToMany(mappedBy = "activite", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Participation> participations;
 
     @PrePersist
     public void prePersist() {
         this.dateCreation = LocalDateTime.now();
-        this.statut = StatutActivite.EN_ATTENTE;
     }
 }

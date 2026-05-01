@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
@@ -19,6 +20,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity
@@ -30,6 +37,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
+                // Activer CORS
+                .cors(cors -> {})
+
                 .csrf(csrf -> csrf.disable())
 
                 // JWT = pas de session
@@ -43,14 +53,27 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/users/register").permitAll()
 
+                        .requestMatchers("/api/activites/invite").permitAll()
+                        .requestMatchers( "/api/participations").permitAll()
+
                         // endpoints admin seulement
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                         // endpoints accessibles aux membres
-                        .requestMatchers("/api/votes/**").hasAnyRole("ADMIN", "MEMBRE")
+                        .requestMatchers("/api/votes/**").hasAnyRole("ADMIN", "MEMBRE_BUREAU_EXECUTIF")
 
+                        .requestMatchers("/api/activites/**").hasAnyRole("ADMIN", "MEMBRE_BUREAU_EXECUTIF")
+
+                        // swagger
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
+                        .requestMatchers(
+                                "/api/users/send-reset-code",
+                                "/api/users/reset-password"
+                        ).permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/contacts").permitAll()
+                        .requestMatchers("/files/**").permitAll()
                         // tout le reste nécessite authentification
                         .anyRequest().authenticated()
                 )
@@ -62,6 +85,7 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 
     @Bean
     public AuthenticationManager authenticationManager(

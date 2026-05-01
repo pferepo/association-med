@@ -15,7 +15,9 @@ public class ParticipationMapper {
 
         return Participation.builder()
                 .nomParticipant(dto.getNomParticipant())
+                .prenomParticipant(dto.getNomParticipant())
                 .emailParticipant(dto.getEmailParticipant())
+                .etbParticipant(dto.getEtbParticipant())
                 .activite(activite)
                 .build();
     }
@@ -25,9 +27,11 @@ public class ParticipationMapper {
         return ParticipationResponseDTO.builder()
                 .id(participation.getId())
                 .nomParticipant(participation.getNomParticipant())
+                .prenomParticipant(participation.getNomParticipant())
                 .emailParticipant(participation.getEmailParticipant())
                 .activiteId(participation.getActivite().getId())
                 .activiteTitre(participation.getActivite().getTitre())
+                .etbParticipant(participation.getEtbParticipant())
                 .build();
     }
 }

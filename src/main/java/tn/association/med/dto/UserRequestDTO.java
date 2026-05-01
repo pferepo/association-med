@@ -16,4 +16,8 @@ public class UserRequestDTO {
     private String password;
     private String genre;
     private Role role;
+    private Boolean active;
+    private String tel;
+    private String grade;
+    private String cin;
 }
