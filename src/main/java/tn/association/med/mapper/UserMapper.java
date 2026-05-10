@@ -11,7 +11,7 @@ public class UserMapper {
 
     // DTO → Entity
     public User toEntity(UserRequestDTO dto) {
-        return User.builder()
+        return User.builder() // pour créer les champs qui n'existe pas das DTO (frontend)
                 .nom(dto.getNom())
                 .prenom(dto.getPrenom())
                 .email(dto.getEmail())

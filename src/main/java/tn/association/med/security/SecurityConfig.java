@@ -44,7 +44,7 @@ public class SecurityConfig {
 
                 // JWT = pas de session
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // pas avec session( pas d'enregistrement dans le navigateur)
                 )
 
                 .authorizeHttpRequests(auth -> auth

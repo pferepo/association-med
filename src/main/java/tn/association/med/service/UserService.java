@@ -19,8 +19,6 @@ public interface UserService {
 
     User getUserByEmail(String email);
 
-    List<UserResponseDTO> getListeMembres();
-
     UserResponseDTO toggleUserActive(Long id);
 
     void deleteUser(Long id);

@@ -18,7 +18,7 @@ public class AdminInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        // =========================
+        // ========================= 
         // ADMIN INIT
         // =========================
         boolean adminExists = userRepository.existsByRole(Role.ADMIN);

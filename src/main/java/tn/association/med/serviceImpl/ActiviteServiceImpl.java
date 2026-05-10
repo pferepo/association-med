@@ -146,6 +146,7 @@ public class ActiviteServiceImpl implements ActiviteService {
     @Override
     public ActiviteResponseDTO updateActivite(Long id, ActiviteRequestDTO dto) {
 
+    	// Qui est en train de faire la modification pour l'utiliser à l'enregistrement de Historique
         User connectedUser = getConnectedUser();
 
         Activite activite = activiteRepository.findById(id)
@@ -263,9 +264,9 @@ public class ActiviteServiceImpl implements ActiviteService {
     // =========================
     @Override
     public List<ActiviteResponseDTO> getActivitiesInvite() {
-        return activiteRepository.getActivitiesInvite()
-                .stream()
-                .map(activiteMapper::toDto)
-                .toList();
+        return activiteRepository.getActivitiesInvite() // ici repo donne list activités completes
+                .stream() // pour parcourir la liste 
+                .map(activiteMapper::toDto) // chaque activité : entité => Dto
+                .toList(); // return la liste de Dto
     }
 }

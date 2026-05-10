@@ -73,7 +73,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findByRole(String role) {
-        return userRepository.findByRole(Role.valueOf(role.trim().toUpperCase()));
+    	// donne les utilisateurs qui ont ce role (dans notre cas : MEMBRE_BUREAU_EXECUTIF )
+        return userRepository.findByRole(Role.valueOf(role));
     }
 
     @Override
@@ -114,7 +115,7 @@ public class UserServiceImpl implements UserService {
 
         // Envoyer un email de notification
         // Titre et message personnalisés selon le nouveau statut
-        String titre = saved.getActive() ? "Votre compte est activé ✅" : "Votre compte est désactivé ❌";
+        String titre = saved.getActive() ? "Votre compte est activé." : "Votre compte est désactivé.";
         String description = saved.getActive()
                 ? "Bonjour " + saved.getPrenom() + ", votre compte a été activé. Vous pouvez désormais vous connecter."
                 : "Bonjour " + saved.getPrenom() + ", votre compte a été désactivé. Vous ne pourrez plus vous connecter.";
@@ -153,16 +154,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    @Override
-    public List<UserResponseDTO> getListeMembres() {
-
-        List<User> membres = userRepository.findByRole(Role.MEMBRE_BUREAU_EXECUTIF);
-
-        return membres.stream()
-                .map(userMapper::toDto)
-                .toList();
-    }
-
+   
     @Override
     public void deleteUser(Long id) {
 
