@@ -2,6 +2,7 @@ package tn.association.med.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DiscriminatorFormula;
 import tn.association.med.enums.Genre;
 import tn.association.med.enums.Role;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorFormula("case when role in ('ADMIN') then 'ADMIN' when role in ('MEMBRE_BUREAU_EXECUTIF') then 'MEMBRE_BUREAU_EXECUTIF' else 'USER' end")
 @DiscriminatorValue("USER")
 @Getter
 @Setter
