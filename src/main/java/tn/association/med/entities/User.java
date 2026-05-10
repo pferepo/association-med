@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("USER")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -31,6 +34,7 @@ public class User {
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", insertable = false, updatable = false)
     private Role role;
 
     @Enumerated(EnumType.STRING)
